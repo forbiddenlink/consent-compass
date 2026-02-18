@@ -56,7 +56,8 @@ const BANNER_HINTS = [
 ];
 
 const ACCEPT_HINTS = ["accept", "allow all", "agree", "ok", "got it"];
-const REJECT_HINTS = ["reject", "decline", "deny", "disallow", "no thanks", "only necessary"];
+const REJECT_HINTS = ["reject", "decline", "deny", "disallow", "no thanks", "only necessary", "necessary only"];
+const MANAGE_HINTS = ["preferences", "manage", "settings", "customize", "choices", "more options"];
 
 export async function scanUrl(url: string): Promise<ScanResult> {
   const started = Date.now();
@@ -64,6 +65,12 @@ export async function scanUrl(url: string): Promise<ScanResult> {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ userAgent: UA, viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
+
+  const preConsentRequests: { url: string; resourceType: string }[] = [];
+  page.on("request", (req) => {
+    if (preConsentRequests.length >= 60) return;
+    preConsentRequests.push({ url: req.url(), resourceType: req.resourceType() });
+  });
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
@@ -98,34 +105,58 @@ export async function scanUrl(url: string): Promise<ScanResult> {
 
     const acceptButtons: string[] = [];
     const rejectButtons: string[] = [];
+    const managePrefsButtons: string[] = [];
 
-    // Search visible buttons/links by their text.
+    // Search visible-ish buttons/links by their text.
     const clickable = page.locator("button, [role='button'], a");
     const clickableCount = await clickable.count();
-    for (let i = 0; i < Math.min(clickableCount, 200); i++) {
+    for (let i = 0; i < Math.min(clickableCount, 220); i++) {
       const el = clickable.nth(i);
       const text = (await el.innerText().catch(() => "")).trim().toLowerCase();
       if (!text) continue;
 
       const isAccept = ACCEPT_HINTS.some((h) => text === h || text.includes(h));
       const isReject = REJECT_HINTS.some((h) => text === h || text.includes(h));
+      const isManage = MANAGE_HINTS.some((h) => text === h || text.includes(h));
 
       if (isAccept) acceptButtons.push(text.slice(0, 80));
       if (isReject) rejectButtons.push(text.slice(0, 80));
+      if (isManage) managePrefsButtons.push(text.slice(0, 80));
 
-      if (acceptButtons.length > 10 && rejectButtons.length > 10) break;
+      if (acceptButtons.length > 10 && rejectButtons.length > 10 && managePrefsButtons.length > 10) break;
     }
 
     const findings: ConsentFinding[] = [];
 
-    const bannerDetected = detectedByText || matchedSelectors.length > 0 || acceptButtons.length > 0;
+    const bannerDetected =
+      detectedByText || matchedSelectors.length > 0 || acceptButtons.length > 0 || rejectButtons.length > 0;
     const confidence = clamp(
-      (detectedByText ? 0.35 : 0) +
+      (detectedByText ? 0.3 : 0) +
         (matchedSelectors.length > 0 ? 0.45 : 0) +
-        (acceptButtons.length > 0 ? 0.2 : 0),
+        (acceptButtons.length > 0 ? 0.15 : 0) +
+        (rejectButtons.length > 0 ? 0.1 : 0),
       0,
       1,
     );
+
+    const preConsentCookiesRaw = await context.cookies();
+    const preConsentCookies = preConsentCookiesRaw
+      .map((c) => ({ name: c.name, domain: c.domain, path: c.path }))
+      .slice(0, 80);
+
+    const frictionNotes: string[] = [];
+    let acceptClicks: number | undefined;
+    let rejectClicks: number | undefined;
+
+    // Click-friction is tricky (many CMPs are multi-step). For v0:
+    // - if we see a direct reject button, treat as 1 click
+    // - if reject missing but there is a "preferences/settings" button, treat as 2 clicks (open prefs + find reject)
+    if (acceptButtons.length > 0) acceptClicks = 1;
+    if (rejectButtons.length > 0) rejectClicks = 1;
+    else if (managePrefsButtons.length > 0 && acceptButtons.length > 0) {
+      rejectClicks = 2;
+      frictionNotes.push("No obvious ‘Reject all’ found; ‘Preferences/Settings’ present (likely 2+ step rejection)." );
+    }
 
     if (!bannerDetected) {
       findings.push({
@@ -140,10 +171,12 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     if (acceptButtons.length > 0 && rejectButtons.length === 0) {
       findings.push({
         id: "choice.symmetry.reject_missing",
-        title: "Reject / ‘Only necessary’ option not found",
-        severity: "fail",
+        title: "Reject / ‘Only necessary’ option not found on first layer",
+        severity: managePrefsButtons.length > 0 ? "warn" : "fail",
         detail:
-          "We found an obvious ‘accept’ action but no equally-visible ‘reject’ / ‘only necessary’ action. This is commonly considered non-symmetric choice design.",
+          managePrefsButtons.length > 0
+            ? "We found an ‘accept’ action but no equally-visible ‘reject’ action on the first layer. A preferences/settings path exists, which often adds friction to rejecting."
+            : "We found an obvious ‘accept’ action but no equally-visible ‘reject’ / ‘only necessary’ action. This is commonly considered non-symmetric choice design.",
         evidence: { kind: "text", value: `accept: ${acceptButtons.slice(0, 3).join(", ")}` },
       });
     }
@@ -154,7 +187,18 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         title: "Consent UI appears present",
         severity: "info",
         detail:
-          "A consent interface was detected via text/selector heuristics. Next iterations will validate actual pre-consent tracking and click-friction measurements.",
+          "A consent interface was detected via text/selector heuristics. v0 also captures pre-consent cookies/requests and a rough click-friction estimate.",
+      });
+    }
+
+    if (preConsentCookies.length > 0) {
+      findings.push({
+        id: "preconsent.cookies.present",
+        title: "Cookies detected before any consent interaction",
+        severity: "warn",
+        detail:
+          "Cookies exist immediately after page load (before we clicked anything). Some may be essential, but this is a key signal to investigate for non-essential tracking.",
+        evidence: { kind: "text", value: preConsentCookies.slice(0, 6).map((c) => c.name).join(", ") },
       });
     }
 
@@ -176,6 +220,16 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         selectors: matchedSelectors.slice(0, 10),
         acceptButtons: acceptButtons.slice(0, 10),
         rejectButtons: rejectButtons.slice(0, 10),
+        managePrefsButtons: managePrefsButtons.slice(0, 10),
+      },
+      friction: {
+        acceptClicks,
+        rejectClicks,
+        notes: frictionNotes,
+      },
+      preConsent: {
+        cookies: preConsentCookies,
+        requests: preConsentRequests.slice(0, 80),
       },
       artifacts: { screenshotPath },
       findings,

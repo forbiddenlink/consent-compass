@@ -28,6 +28,16 @@ export type ScanResult = {
     selectors: string[];
     acceptButtons: string[];
     rejectButtons: string[];
+    managePrefsButtons: string[];
+  };
+  friction: {
+    acceptClicks?: number;
+    rejectClicks?: number;
+    notes?: string[];
+  };
+  preConsent: {
+    cookies: { name: string; domain?: string; path?: string }[];
+    requests: { url: string; resourceType: string }[];
   };
   artifacts: {
     screenshotPath?: string;

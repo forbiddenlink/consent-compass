@@ -105,6 +105,9 @@ export default function Home() {
                 <div className="text-right text-xs text-white/60">
                   <div>Banner detected: {result.banner.detected ? "yes" : "no"}</div>
                   <div>Confidence: {(result.banner.confidence * 100).toFixed(0)}%</div>
+                  <div className="mt-2">
+                    Friction (est.): accept {result.friction.acceptClicks ?? "—"} / reject {result.friction.rejectClicks ?? "—"} clicks
+                  </div>
                 </div>
               </div>
 
@@ -148,7 +151,7 @@ export default function Home() {
               </div>
 
               <div className="mt-6 text-xs font-medium text-white/70">Signal summary</div>
-              <div className="mt-3 space-y-2 text-sm text-white/70">
+              <div className="mt-3 space-y-4 text-sm text-white/70">
                 <div>
                   <div className="text-xs text-white/60">Accept buttons (heuristic)</div>
                   <div className="mt-1 font-mono text-xs text-white/70">
@@ -162,9 +165,39 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
+                  <div className="text-xs text-white/60">Manage/preferences buttons</div>
+                  <div className="mt-1 font-mono text-xs text-white/70">
+                    {result.banner.managePrefsButtons.length ? result.banner.managePrefsButtons.join(" · ") : "—"}
+                  </div>
+                </div>
+                <div>
                   <div className="text-xs text-white/60">Matched selectors</div>
                   <div className="mt-1 font-mono text-xs text-white/70">
                     {result.banner.selectors.length ? result.banner.selectors.join(" · ") : "—"}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-xs text-white/60">Pre-consent cookies (sample)</div>
+                  <div className="mt-1 font-mono text-xs text-white/70">
+                    {result.preConsent.cookies.length
+                      ? result.preConsent.cookies
+                          .slice(0, 10)
+                          .map((c) => c.name)
+                          .join(" · ")
+                      : "—"}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-xs text-white/60">Pre-consent requests (sample)</div>
+                  <div className="mt-1 font-mono text-xs text-white/70">
+                    {result.preConsent.requests.length
+                      ? result.preConsent.requests
+                          .slice(0, 6)
+                          .map((r) => `${r.resourceType}: ${new URL(r.url).hostname}`)
+                          .join(" · ")
+                      : "—"}
                   </div>
                 </div>
               </div>
