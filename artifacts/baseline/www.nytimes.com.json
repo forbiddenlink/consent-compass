@@ -1,0 +1,594 @@
+{
+  "status": "ok",
+  "url": "https://www.nytimes.com",
+  "scannedAt": "2026-02-18T21:28:40.191Z",
+  "score": {
+    "choiceSymmetry": 45,
+    "preConsentSignals": 65,
+    "accessibility": 80,
+    "transparency": 80,
+    "overall": 68
+  },
+  "banner": {
+    "detected": true,
+    "confidence": 0.44999999999999996,
+    "selectors": [],
+    "acceptButtons": [
+      "dealbook",
+      "dealbookthe most crucial business and policy news you need to know.",
+      "book review",
+      "booksreviews, news and features to help you find your next read.",
+      "book reviewthe podcast that takes you inside the literary world.",
+      "the ezra klein showdiscussions of ideas that matter, plus book recommendations.",
+      "books",
+      "the book review podcast"
+    ],
+    "rejectButtons": [],
+    "managePrefsButtons": []
+  },
+  "friction": {
+    "acceptClicks": 1,
+    "notes": []
+  },
+  "preConsent": {
+    "cookies": [
+      {
+        "name": "nyt-a",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "nyt-gdpr",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "nyt-purr",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "nyt-geo",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "nyt-traceid",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "nyt-b-sid",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "sessionActive",
+        "domain": ".et.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "sessionIndex",
+        "domain": ".et.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "et-ppvid",
+        "domain": ".et.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "_dd_s",
+        "domain": "www.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "jkidd-p",
+        "domain": "a.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "nyt-jkidd",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "jkidd-s",
+        "domain": "a.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "purr-cache",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "purr-pref-agent",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "gpp-string",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "ad-id",
+        "domain": ".amazon-adsystem.com",
+        "path": "/"
+      },
+      {
+        "name": "ad-privacy",
+        "domain": ".amazon-adsystem.com",
+        "path": "/"
+      },
+      {
+        "name": "_cb",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "_chartbeat2",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "_cb_svref",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "fides_consent",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "CMID",
+        "domain": ".casalemedia.com",
+        "path": "/"
+      },
+      {
+        "name": "CMPS",
+        "domain": ".casalemedia.com",
+        "path": "/"
+      },
+      {
+        "name": "CMPRO",
+        "domain": ".casalemedia.com",
+        "path": "/"
+      },
+      {
+        "name": "A3",
+        "domain": ".yahoo.com",
+        "path": "/"
+      },
+      {
+        "name": "i",
+        "domain": ".openx.net",
+        "path": "/"
+      },
+      {
+        "name": "audit_p",
+        "domain": ".rubiconproject.com",
+        "path": "/"
+      },
+      {
+        "name": "khaos",
+        "domain": ".rubiconproject.com",
+        "path": "/"
+      },
+      {
+        "name": "khaos_p",
+        "domain": ".rubiconproject.com",
+        "path": "/"
+      },
+      {
+        "name": "audit",
+        "domain": ".rubiconproject.com",
+        "path": "/"
+      },
+      {
+        "name": "receive-cookie-deprecation",
+        "domain": ".rubiconproject.com",
+        "path": "/"
+      },
+      {
+        "name": "tluidp",
+        "domain": ".3lift.com",
+        "path": "/"
+      },
+      {
+        "name": "tluid",
+        "domain": ".3lift.com",
+        "path": "/"
+      },
+      {
+        "name": "pd",
+        "domain": ".openx.net",
+        "path": "/"
+      },
+      {
+        "name": "cto_bundle",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "cto_bidid",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "IDSYNC",
+        "domain": ".analytics.yahoo.com",
+        "path": "/"
+      },
+      {
+        "name": "IDE",
+        "domain": ".doubleclick.net",
+        "path": "/"
+      },
+      {
+        "name": "uid",
+        "domain": ".turn.com",
+        "path": "/"
+      },
+      {
+        "name": "receive-cookie-deprecation",
+        "domain": ".casalemedia.com",
+        "path": "/"
+      },
+      {
+        "name": "TDID",
+        "domain": ".adsrvr.org",
+        "path": "/"
+      },
+      {
+        "name": "TDCPM",
+        "domain": ".adsrvr.org",
+        "path": "/"
+      },
+      {
+        "name": "obuid",
+        "domain": ".outbrain.com",
+        "path": "/"
+      },
+      {
+        "name": "DotomiTest",
+        "domain": ".dotomi.com",
+        "path": "/"
+      },
+      {
+        "name": "receive-cookie-deprecation",
+        "domain": ".3lift.com",
+        "path": "/"
+      },
+      {
+        "name": "receive-cookie-deprecation",
+        "domain": "prebid.media.net",
+        "path": "/"
+      },
+      {
+        "name": "datadome",
+        "domain": ".www.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "__gads",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "__gpi",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "__eoi",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "_lr_geo_location_state",
+        "domain": "www.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "_lr_geo_location",
+        "domain": "www.nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "_gcl_au",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "iter_id",
+        "domain": ".nytimes.com",
+        "path": "/"
+      },
+      {
+        "name": "uuid",
+        "domain": ".innovid.com",
+        "path": "/"
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.nytimes.com/",
+        "resourceType": "document"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/pool-0.2.21-CbJK-W2L.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/player-0.2.21-CnxAEwcy.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/cover-0.2.21-eTrf0IGY.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/poster-0.2.21-BdueiXaE.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/overlay-controls-0.2.21-DTyJF-yz.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/scrubber-0.2.21-allGBXvP.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/video-feed-0.2.21-B6oEyZn8.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/pool-0.2.21-DQhAd_PI.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/betamax-shared-BYVoyj8N.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/video-element-CR9QUw_L.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/signal-utils-CSFcG26O.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/player-B8yJFSwz.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/reduced-motion-CXlzROl-.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/event-types-BNwnJEC0.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/identify-user-NlIHKxju.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/cover-0.2.21-DUT-D3gL.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/poster-0.2.21-WLthNYBE.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/image-BwBcILE6.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/overlay-controls-D2qU04Gu.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/use-share-DhWYKX2L.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/scrubber-DEDD7xI5.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/keyboard-controls-D8fGZ0kw.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nyt.com/video-static/betamax/video-feed-0.2.21-Cth8ldzw.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://g1.nyt.com/fonts/css/web-fonts.c851560786173ad206e1f76c1901be7e096e8f8b.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/global-bf55b3b62e74478ad488922130f07a8e.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/cssModulesStyles-a5d411ea88fe1cd5b65c.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/adslot-4fd8e73d784c2e9b18d6.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/weather-hp-strip/0e2c4534-c18a-4d15-8197-5a78ae8e9726/_assets/_app/immutable/assets/weather-hp-modules.cbd92ddb.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/9.1-EZ_fTw.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/timezoneUtils.CXmZkacQ.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.CyB6tk6K.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.XwSdQFPQ.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.B4hzU3sz.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.Be2_Kc5J.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.B8PCUNG_.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.BJax-mlo.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.C4E1-tHK.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.D5C_Vk8k.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.CcIVt_yK.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.C8I3_QBT.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.ChiS26-v.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nytimes.com/newsgraphics/LpS9iBRbMhQcug/_app.PQgKqzlhGzONHfnEZOYbSHZuIsB6_XYVYVWsgJigQuo/immutable/assets/index.BJ-lnWl4.css",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/17/us/east-wing-latest-promo-east-wing/east-wing-latest-promo-east-wing-threeByTwoSmallAt2X-v2.jpg?format=pjpg&quality=75&auto=webp&disable=upscale",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/03/05/multimedia/05olympics-fast-photos-slalom-shiffrin-cjht/05olympics-fast-photos-slalom-shiffrin-cjht-verticalTwoByThree735.jpg?format=pjpg&quality=75&auto=webp",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/03/05/multimedia/05olympics-fast-photos-slalom-shiffrin-lqtk/05olympics-fast-photos-slalom-shiffrin-lqtk-verticalTwoByThree735.jpg?format=pjpg&quality=75&auto=webp",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/03/05/multimedia/05olympics-fast-photos-slalom-shiffrin-02-qglv/05olympics-fast-photos-slalom-shiffrin-02-qglv-verticalTwoByThree735.jpg?format=pjpg&quality=75&auto=webp",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/03/05/multimedia/05olympics-fast-photos-slalom-shiffrin-01-qtvp/05olympics-fast-photos-slalom-shiffrin-01-qtvp-verticalTwoByThree735-v2.jpg?format=pjpg&quality=75&auto=webp",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/12/arts/THUMBNAIL/THUMBNAIL-verticalTwoByThree735.jpg?auto=webp&quality=30&disable=upscale&format=pjpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/13/multimedia/ST-MAN-VS-PHONE-01-bpqw-copy/ST-MAN-VS-PHONE-01-bpqw-copy-square640.jpg?quality=75&auto=webp",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/14/arts/option4/option4-verticalTwoByThree735.jpg?auto=webp&quality=30&disable=upscale&format=pjpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/17/multimedia/17int-ukraine-talks-01-tlkw/17int-ukraine-talks-01-tlkw-verticalTwoByThree735.jpg?auto=webp&quality=30&disable=upscale&format=pjpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/03/arts/op-body-positivity-thumb/op-body-positivity-thumb-smallTwoByThree.jpg?auto=webp&quality=30&disable=upscale&format=pjpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2026/02/17/smarter-living/wirecutter/THUMBNAIL_260206_WC_NYK_BEDROOM_CLEANING_SCHEDULE_ES/THUMBNAIL_260206_WC_NYK_BEDROOM_CLEANING_SCHEDULE_ES-verticalTwoByThree735.jpg?auto=webp&quality=30&disable=upscale&format=pjpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://static01.nyt.com/images/2025/03/05/multimedia/AS-crispy-halloumi-salad-zfmj/AS-crispy-halloumi-salad-zfmj-verticalTwoByThree735.jpg?auto=webp&quality=30&disable=upscale&format=pjpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/vendor-8e3a81a97df57c6f59c2.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/home-cb1f99a373e7bd728176.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/desktopLogoNav-4f1969814f5c40c28324.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.nytimes.com/vi-assets/static-assets/nestedNav-85c59602b976cd2f070b.js",
+        "resourceType": "script"
+      }
+    ]
+  },
+  "artifacts": {
+    "screenshotPath": "/tmp/consent-compass-www.nytimes.com-1771450119230.png"
+  },
+  "findings": [
+    {
+      "id": "choice.symmetry.reject_missing",
+      "title": "Reject / ‘Only necessary’ option not found on first layer",
+      "severity": "fail",
+      "detail": "We found an obvious ‘accept’ action but no equally-visible ‘reject’ / ‘only necessary’ action. This is commonly considered non-symmetric choice design.",
+      "evidence": {
+        "kind": "text",
+        "value": "accept: dealbook, dealbookthe most crucial business and policy news you need to know., book review"
+      }
+    },
+    {
+      "id": "transparency.banner_detected",
+      "title": "Consent UI appears present",
+      "severity": "info",
+      "detail": "A consent interface was detected via text/selector heuristics. v0 also captures pre-consent cookies/requests and a rough click-friction estimate."
+    },
+    {
+      "id": "preconsent.cookies.present",
+      "title": "Cookies detected before any consent interaction",
+      "severity": "warn",
+      "detail": "Cookies exist immediately after page load (before we clicked anything). Some may be essential, but this is a key signal to investigate for non-essential tracking.",
+      "evidence": {
+        "kind": "text",
+        "value": "nyt-a, nyt-gdpr, nyt-purr, nyt-geo, nyt-traceid, nyt-b-sid"
+      }
+    }
+  ],
+  "meta": {
+    "userAgent": "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari",
+    "tookMs": 6677
+  }
+}

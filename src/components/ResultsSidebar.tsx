@@ -7,18 +7,18 @@ interface ResultsSidebarProps {
 
 export function ResultsSidebar({ result }: ResultsSidebarProps) {
   return (
-    <div className="rounded-lg border border-white/[8%] bg-white/[3%] p-6">
-      <div className="text-xs font-medium uppercase tracking-wide text-white/50">Artifacts</div>
+    <div className="rounded-xl border border-white/10 bg-[#121212] p-6 shadow-sm">
+      <div className="text-[11px] font-medium uppercase tracking-wide text-white/50">Artifacts</div>
       <div className="mt-3">
         <SignalSection label="Screenshot">
           {result.artifacts.screenshotPath || <EmptyData />}
         </SignalSection>
       </div>
 
-      <hr className="my-6 border-white/[6%]" />
+      <hr className="my-6 border-white/5" />
 
-      <div className="text-xs font-medium uppercase tracking-wide text-white/50">Signal Summary</div>
-      <div className="mt-4 space-y-5">
+      <div className="text-[11px] font-medium uppercase tracking-wide text-white/50">Signal Summary</div>
+      <div className="mt-4 flex flex-col divide-y divide-white/5">
         <SignalSection label="Accept buttons">
           {result.banner.acceptButtons.length ? result.banner.acceptButtons.join(" · ") : <EmptyData />}
         </SignalSection>
@@ -35,7 +35,8 @@ export function ResultsSidebar({ result }: ResultsSidebarProps) {
           {result.banner.selectors.length ? result.banner.selectors.join(" · ") : <EmptyData />}
         </SignalSection>
 
-        <hr className="border-white/[6%]" />
+        </div>
+        <div className="py-3">
 
         {/* Cookie Categories */}
         {result.preConsent.cookiesByCategory && (
@@ -44,13 +45,11 @@ export function ResultsSidebar({ result }: ResultsSidebarProps) {
 
         {/* Google Consent Mode */}
         {result.googleConsentMode?.detected && (
-          <>
-            <hr className="border-white/[6%]" />
+          <div className="py-3">
             <GoogleConsentModeSection gcm={result.googleConsentMode} />
-          </>
+          </div>
         )}
-
-        <hr className="border-white/[6%]" />
+        <div className="py-3">
 
         <SignalSection label="Pre-consent cookies">
           {result.preConsent.cookies.length
@@ -69,6 +68,7 @@ export function ResultsSidebar({ result }: ResultsSidebarProps) {
               }).join(" · ")
             : <EmptyData />}
         </SignalSection>
+        </div>
       </div>
     </div>
   );
@@ -105,7 +105,8 @@ function CookieCategoriesSection({ categories }: { categories: NonNullable<ScanR
   );
 }
 
-function GoogleConsentModeSection({ gcm }: { gcm: NonNullable<ScanResult["googleConsentMode"]> }) {
+function GoogleConsentModeSection({ gcm }: { gcm: ScanResult["googleConsentMode"] }) {
+  if (!gcm) return null;
   return (
     <div className="space-y-2">
       <div className="text-[11px] font-medium uppercase tracking-wide text-white/40">Google Consent Mode</div>

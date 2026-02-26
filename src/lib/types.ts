@@ -70,6 +70,11 @@ export type FrictionAnalysis = {
   acceptPath: string[];
   rejectPath: string[];
   asymmetryScore: number; // 0-100, higher = more asymmetric (worse)
+  // New friction scoring fields
+  overallScore?: number; // 0-100, weighted combination
+  clickAsymmetry?: number; // 0-100
+  cognitiveScore?: number; // 0-100
+  cognitivePatterns?: string[]; // detected pattern types
   notes: string[];
 };
 

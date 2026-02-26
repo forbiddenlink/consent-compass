@@ -12,7 +12,7 @@ const styles = {
 
 export function SeverityBadge({ severity }: SeverityBadgeProps) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${styles[severity]}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase ${styles[severity]}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
       {severity}
     </span>

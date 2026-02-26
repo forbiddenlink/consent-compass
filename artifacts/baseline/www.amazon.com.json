@@ -1,0 +1,349 @@
+{
+  "status": "ok",
+  "url": "https://www.amazon.com",
+  "scannedAt": "2026-02-18T21:28:46.668Z",
+  "score": {
+    "choiceSymmetry": 65,
+    "preConsentSignals": 65,
+    "accessibility": 80,
+    "transparency": 80,
+    "overall": 73
+  },
+  "banner": {
+    "detected": true,
+    "confidence": 0.44999999999999996,
+    "selectors": [],
+    "acceptButtons": [
+      "books",
+      "kindle books"
+    ],
+    "rejectButtons": [],
+    "managePrefsButtons": [
+      "your shopping preferences",
+      "reset restore all settings to the default values"
+    ]
+  },
+  "friction": {
+    "acceptClicks": 1,
+    "rejectClicks": 2,
+    "notes": [
+      "No obvious ‘Reject all’ found; ‘Preferences/Settings’ present (likely 2+ step rejection)."
+    ]
+  },
+  "preConsent": {
+    "cookies": [
+      {
+        "name": "skin",
+        "domain": ".amazon.com",
+        "path": "/"
+      },
+      {
+        "name": "csm-hit",
+        "domain": "www.amazon.com",
+        "path": "/"
+      },
+      {
+        "name": "session-id",
+        "domain": ".amazon.com",
+        "path": "/"
+      },
+      {
+        "name": "session-id-time",
+        "domain": ".amazon.com",
+        "path": "/"
+      },
+      {
+        "name": "i18n-prefs",
+        "domain": ".amazon.com",
+        "path": "/"
+      },
+      {
+        "name": "lc-main",
+        "domain": ".amazon.com",
+        "path": "/"
+      },
+      {
+        "name": "rxc",
+        "domain": "www.amazon.com",
+        "path": "/"
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.amazon.com/",
+        "resourceType": "document"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/21IHmFceiiL._RC%7C510BGRc9FFL.css_.css?AUIClients/AmazonUI",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/11T9EXq1JNL._RC%7C01cxwTawfML.css,41cDjZZ1gQL.css,31L6rmNHM-L.css,21JMC7OC91L.css,01xH+fhFIJL.css,01EJgRrSvHL.css,413Vvv3GONL.css,1170nDgl0uL.css,01Rw4F+QU6L.css,11NeGmEx+fL.css,01LmAy9LJTL.css,01IdKcBuAdL.css,01iHqjS7YfL.css,01eVBHHaY+L.css,21D3IemrALL.css,11pDJV08stL.css,51yqRfvysvL.css,01HWrzt-WgL.css,01XPHJk60-L.css,11aX6hlPzjL.css,01GAxF7K5tL.css,01ZM-s8Z3xL.css,21gEzBqpmtL.css,11CFYS0t4PL.css,21TxBPhrLyL.css,21Dt9D2TuML.css,31GD5I7tbCL.css,111h7n9dRnL.css,31Qk3MvcMIL.css,11PDZ29p-PL.css,11kbPm9N5xL.css,215WpAjwzoL.css,11sUwulETuL.css,114aTS6SjML.css,01xFKTPySiL.css,21GcfcmbahL.css,21OD8FuBraL.css,11XozyxiH7L.css,21n1oEPZnHL.css,11HVvPbE6JL.css,119Cktja74L.css,11PMguLK6gL.css,01890+Vwk8L.css,11sjvwOAToL.css,01qiwJ7qDfL.css,21AS3Iv3HQL.css,016mfgi+D2L.css,01VinDhK+DL.css,31un+UKeIeL.css,21msrr4h2yL.css,013-xYw+SRL.css_.css?AUIClients/AmazonUI",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/51waPb-h-9L._RC%7C71kIdLna5RL.css,416EF9fibnL.css,61p+Jc2B9kL.css,5129jh4wl0L.css,21+aSDsl2PL.css,01FcI3FsaiL.css,21Hc1s0-E4L.css,31YZpDCYJPL.css,21DwGGPS1eL.css,41vWFCvFunL.css,21CB9R4dxNL.css,111Bp55OByL.css,01H8CHB5aiL.css,21KQnzhmfTL.css,41bqNBi+QSL.css,51v+nHMAh7L.css,01NLp3ZKNoL.css_.css?AUIClients/NavDesktopUberAsset",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/413o2CUJ6GL.css?AUIClients/AmazonGatewayAuiAssets",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/G/01/social_share/amazon_logo._CB635397845_.png",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/G/01/gno/sprites/nav-sprite-global-1x-reorg-privacy._CB779528203_.png",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/41Dtjyv3SiL.css?AUIClients/AdPlacementStyleAssets",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/51xq9SFUNcL._SR1500,300_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/fashion/CORE_HP_Trending_Pre-loved_handbags_5_186x116._SY116_CB804224994_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/LV__Desk_QC_1x._SY116_CB788078650_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Dior_saddle__1x_QC._SY116_CB788132518_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/fashion/CORE_HP_Trending_Pre-loved_handbags_8_186x116._SY116_CB804224994_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Winter_essentials_1x_Desktop_Quad_card_w_title_-_Card_1._SY116_CB787913346_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Winter_essentials_1x__Desktop_Quad_card_w_title_-_Card_3._SY116_CB787913346_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Winter_essentials_1x__Desktop_Quad_card_w_title_-_Card_4._SY116_CB787913346_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Winter_essentials_1x__Desktop_Quad_card_w_title_-_Card_2._SY116_CB787913346_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/71I2Az+0YaL._AC_SY145_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/41TFBDXX5fL._AC_SY145_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/417nx696+lL._AC_SY145_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/41WUrJHHbOL._AC_SY145_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Glowy_Beauty_-_1x_Desktop_Quad_card_w_title_-_Card_4._SY116_CB787913531_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Glowy_beauty_2x_Desktop_Quad_card_w_title_-_Card_2._SY116_CB787907606_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Glowy_Beauty_-_1x_Desktop_Quad_card_w_title_-_Card_1._SY116_CB787913531_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Luxury/BTF/Glowy_beauty_1x_Desktop_Quad_FRAGRANCE._SY116_CB788086695_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17495_HP_Shoveler_DT_Deals_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17496_HP_Shoveler_DT_OutletDeals_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17503_HP_Shoveler_DT_CML_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17499_HP_Shoveler_DT_HealthWellness_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17500_HP_Shoveler_DT_Home_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17498_HP_Shoveler_DT_Beauty_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/Shoveler/26Deals_PresidentsDay_17497_HP_Shoveler_DT_Fashion_1x._CB773321844_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/51CfZ8zGq9L._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/717FM41-pPL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/71r5Gqy84rL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/61QrJHOz-YL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/71MmnUFKgpL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/81QQOmhZwOL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/71LqxbA1WCL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_17434_HP_QC_NW_Fashion_DT_1x._SY116_CB773312198_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_17429_HP_QC_NE_Beauty_DT_1x._SY116_CB773312198_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_17431_HP_QC_SW_Electronics_DT_1x._SY116_CB773312198_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_17430_HP_QC_SE_HomeKitchen_DT_1x._SY116_CB773312198_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/AMAZON-FASHION/Zappos-FBA/PresDayBootsQuad2026/FBA-PRESIDENTS-DAY-QUAD-CARD-WOMENS-BOOTS-DESKTOP-1X-186x116._SY116_CB788017652_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/AMAZON-FASHION/Zappos-FBA/PresDayBootsQuad2026/FBA-PRESIDENTS-DAY-QUAD-CARD-MENS-BOOTS-DESKTOP-1X-186x116._SY116_CB788017652_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/AMAZON-FASHION/Zappos-FBA/PresDayBootsQuad2026/FBA-PRESIDENTS-DAY-QUAD-CARD-GIRLS-BOOTS-DESKTOP-1X-186x116._SY116_CB788017652_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/AMAZON-FASHION/Zappos-FBA/PresDayBootsQuad2026/FBA-PRESIDENTS-DAY-QUAD-CARD-BOYS-BOOTS-DESKTOP-1X-186x116._SY116_CB788017652_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_18092_Outlet_Fashion_DT_1x._SY116_CB773174298_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_18093_Outlet_Electronics_DT_1x._SY116_CB773174298_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_18094_Outlet_HomeKitchen_DT_1x._SY116_CB773174298_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/DiscoTec/2026/Deals/PresidentsDaySale/Homepage/QuadCard/26Deals_PresidentsDay_18095_Outlet_HomeDIY_DT_1x._SY116_CB773174298_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://images-na.ssl-images-amazon.com/images/G/01/softlines/shopbop/ingress/2026/feb/mp_20260203_ingress_desktop_CAT_apo_1x._SY304_CB787584849_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/718RbhzhVbL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/61X5bY+reYL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/61f1FJiuShL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/71Si2QlAb3L._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/71+omVwPiXL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/914ufIDbM1L._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/7136-eapqKL._AC_SY200_.jpg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://m.media-amazon.com/images/I/61aPY8odPSL._AC_SY200_.jpg",
+        "resourceType": "image"
+      }
+    ]
+  },
+  "artifacts": {
+    "screenshotPath": "/tmp/consent-compass-www.amazon.com-1771450126250.png"
+  },
+  "findings": [
+    {
+      "id": "choice.symmetry.reject_missing",
+      "title": "Reject / ‘Only necessary’ option not found on first layer",
+      "severity": "warn",
+      "detail": "We found an ‘accept’ action but no equally-visible ‘reject’ action on the first layer. A preferences/settings path exists, which often adds friction to rejecting.",
+      "evidence": {
+        "kind": "text",
+        "value": "accept: books, kindle books"
+      }
+    },
+    {
+      "id": "transparency.banner_detected",
+      "title": "Consent UI appears present",
+      "severity": "info",
+      "detail": "A consent interface was detected via text/selector heuristics. v0 also captures pre-consent cookies/requests and a rough click-friction estimate."
+    },
+    {
+      "id": "preconsent.cookies.present",
+      "title": "Cookies detected before any consent interaction",
+      "severity": "warn",
+      "detail": "Cookies exist immediately after page load (before we clicked anything). Some may be essential, but this is a key signal to investigate for non-essential tracking.",
+      "evidence": {
+        "kind": "text",
+        "value": "skin, csm-hit, session-id, session-id-time, i18n-prefs, lc-main"
+      }
+    }
+  ],
+  "meta": {
+    "userAgent": "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari",
+    "tookMs": 2790
+  }
+}

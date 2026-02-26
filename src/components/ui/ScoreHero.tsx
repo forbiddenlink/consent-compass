@@ -26,8 +26,8 @@ export function ScoreHero({ score }: ScoreHeroProps) {
   }, [score]);
 
   return (
-    <div className={`inline-flex h-20 w-20 items-center justify-center rounded-lg border ${styles.bg} ${styles.border}`}>
-      <span className={`text-4xl font-semibold tabular-nums ${styles.text}`}>{score}</span>
+    <div className={`inline-flex h-20 w-20 items-center justify-center rounded-xl border flex-shrink-0 ${styles.bg} ${styles.border}`}>
+      <span className={`text-4xl font-semibold tracking-tighter tabular-nums ${styles.text}`}>{score}</span>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export function ScorePill({ label, value }: ScorePillProps) {
   }, [value]);
 
   return (
-    <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs ${styles.border} ${styles.bg}`}>
+    <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium tracking-wide ${styles.border} ${styles.bg}`}>
       <span className="text-white/60">{label}</span>
       <span className={`font-semibold tabular-nums ${styles.text}`}>{value}</span>
     </div>

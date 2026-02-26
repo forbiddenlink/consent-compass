@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.awwwards.com)",
+      "WebFetch(domain:dribbble.com)",
+      "WebFetch(domain:uitop.design)",
+      "WebFetch(domain:linear.app)",
+      "WebFetch(domain:blog.logrocket.com)",
+      "WebFetch(domain:framerbite.com)",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:arxiv.org)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm test:run:*)",
+      "Bash(pnpm test:coverage:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(~/.claude/scripts/spec_metadata.sh:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsx:*)",
+      "Bash(pnpm tsc:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(bash:*)"
+    ]
+  }
+}

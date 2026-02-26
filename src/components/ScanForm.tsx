@@ -10,12 +10,12 @@ interface ScanFormProps {
 
 export function ScanForm({ url, onUrlChange, onScan, loading, error }: ScanFormProps) {
   return (
-    <section className="mt-10 rounded-lg border border-white/[8%] bg-white/[3%] p-6">
+    <section className="mt-10 rounded-xl border border-white/10 bg-[#121212] p-6 shadow-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <label className="flex-1">
           <div className="mb-2 text-xs font-medium uppercase tracking-wide text-white/50">Target URL</div>
           <input
-            className="w-full rounded-md border border-white/[8%] bg-[rgba(0,0,0,0.3)] px-4 py-3 text-sm outline-none transition placeholder:text-white/30 focus:border-white/[15%] focus:ring-2 focus:ring-white/10 focus:ring-offset-2 focus:ring-offset-[#05060a]"
+            className="w-full rounded-md border border-white/10 bg-[#1a1a1a] px-4 py-3 text-sm font-medium outline-none transition-all duration-150 ease-in-out placeholder:font-normal placeholder:text-white/30 focus:border-white/20 focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-[#121212]"
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="https://example.com"
@@ -29,7 +29,7 @@ export function ScanForm({ url, onUrlChange, onScan, loading, error }: ScanFormP
         </label>
 
         <button
-          className="inline-flex h-11 items-center justify-center rounded-md bg-white px-6 text-sm font-medium text-black transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#05060a] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-11 items-center justify-center rounded-md bg-white px-6 text-sm font-medium tracking-tight text-black shadow-[inset_0_1px_rgba(255,255,255,0.2)] transition duration-150 hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-[#121212] disabled:cursor-not-allowed disabled:opacity-50"
           onClick={onScan}
           disabled={loading}
         >

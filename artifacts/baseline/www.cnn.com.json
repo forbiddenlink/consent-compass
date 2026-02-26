@@ -1,0 +1,378 @@
+{
+  "status": "ok",
+  "url": "https://www.cnn.com",
+  "scannedAt": "2026-02-18T21:28:43.848Z",
+  "score": {
+    "choiceSymmetry": 65,
+    "preConsentSignals": 65,
+    "accessibility": 80,
+    "transparency": 80,
+    "overall": 73
+  },
+  "banner": {
+    "detected": true,
+    "confidence": 0.9,
+    "selectors": [
+      "[id*='consent']",
+      "[class*='consent']"
+    ],
+    "acceptButtons": [
+      "sudoku",
+      ".st0 {\n        fill: #4285f4;\n      }\n\n      .st1 {\n        fill: #a6a6a6;\n     ",
+      ".st0 {\n        fill: #4285f4;\n      }\n\n      .st1 {\n        fill: #a6a6a6;\n     "
+    ],
+    "rejectButtons": [],
+    "managePrefsButtons": [
+      "settings",
+      "settings"
+    ]
+  },
+  "friction": {
+    "acceptClicks": 1,
+    "rejectClicks": 2,
+    "notes": [
+      "No obvious ‘Reject all’ found; ‘Preferences/Settings’ present (likely 2+ step rejection)."
+    ]
+  },
+  "preConsent": {
+    "cookies": [
+      {
+        "name": "SecGpc",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "countryCode",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "stateCode",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "FastAB",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "wbdFch",
+        "domain": ".www.cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "usprivacy",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "OptanonControl",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "OptanonConsent",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "g_state",
+        "domain": "www.cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "st",
+        "domain": ".prd.api.bolt.cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "gi_ls",
+        "domain": ".cnn.com",
+        "path": "/"
+      },
+      {
+        "name": "geoData",
+        "domain": ".cnn.com",
+        "path": "/"
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.cnn.com/",
+        "resourceType": "document"
+      },
+      {
+        "url": "https://lightning.cnn.com/launch/7be62238e4c3/97fa00444124/launch-2878c87af5e3.min.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/js/bundles/cnn-adfuel-3cead6f2692d930e11d3d61464df887f4d14595ae49e3e256c7d41ff1cc9628e.min.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/js/bundles/cnn-adfuel-body-7b0dabdfbcf2c5dfcde0acef9ef45853d2f3de7d0368d72b21ebe60fff1a5b9e.min.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://registry.api.cnn.io/bundles/fave/latest-4.x/js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.optimizely.com/public/125375509/s/landingprod.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/still-22376417-1444-016-still.jpg?c=16x9&q=h_438,w_780,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/c-2026-02-18t131850z-1790638787-rc2dojaajfkt-rtrmadp-3-iran-crisis-images.jpg?c=16x9&q=h_720,w_1280,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/02-2026-02-11t185334z-1353884783-rc2tjjaud1pv-rtrmadp-3-usa-justice-bondi.jpg?c=16x9&q=h_720,w_1280,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2261815865.jpg?c=16x9&q=h_270,w_480,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/3164381-0293.jpg?c=16x9&q=h_270,w_480,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/still-22376515-2460205-0949999997-still.jpg?c=16x9&q=h_270,w_480,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/cnnheadlines-webdtc-1x1.jpg?c=16x9&q=w_1280,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2262358804a.JPG?c=16x9&q=h_438,w_780,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/longevity-conference-vod-thumb-06.jpg?c=16x9&q=h_720,w_1280,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.6.1/iframeResizer.min.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/google-play-cnn-app-qr-code.png",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/app-store-cnn-app-qr-code.png",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lightning.cnn.com/launch/7be62238e4c3/97fa00444124/ca5f6ecb6acd/EX3369274195e2430d9d8ea7012971cb11-libraryCode_source.min.js",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://healthguides.cnn.com/ucms/rss/cnn-hp-health-link-1?renderer=html",
+        "resourceType": "document"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/video-icon-header.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/audio-icon-header.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/video-dark.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/video-placeholder.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/live-video-icon-red.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/live-video-icon.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/ui-speech-bubble.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117217-quadgodintv.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/video.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117211-avalanchehitstraininswitzerland-thumbnail-cl.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/final-vert-thumb-w-hed.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/colbert-2.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117156-beals-thumb-vrtc.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117202-shark-on-cam-00-00-19-20-still001.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117203-hudsonrivereagle-thmb.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117207-dograceolympics-thumbnail-clean.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/116689-epl-vertical-womens-montage-clean.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117216-mikaelashiffringrief-thumb.png?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/20260218-wildfires-central-us-00-00-01-24-still001.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117201-vehiclepileupcolorado-vrtc-clean-00-00-26-08-still001.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/thumbnail-kju-soldiers-homes-1-vrtc.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117198-clean-guthriegabbypetitofather-vrtc-00-01-20-15-still002.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/vrtc-260218hk-ichikawamonkeypunch-00-00-00-00-still003.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117196-oregoncarhousecrashclean.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117194-tahoe-avalanche-00-00-10-04-still002.png?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117060-olympic-curling-stone-clean-thumb.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117191-wildfireoklahoma-00-00-01-27-still001.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/americas-next-top-model-clean-vrtc.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/surfing.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117190-abby-phillip-jesse-jackson-00-00-01-20-still004.png?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117158-trumpchurchstateseparation-thumb-clean-1.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/117188-guthrieupdatecampbell-thumb.jpg?c=9x16&q=h_480,w_270,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/fonts/cnn/cnn_sans_display-v1.woff2",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://www.cnn.com/media/sites/cnn/icons/ui-search.svg",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://www.cnn.com/fonts/cnn/cnn_sans_display-bold-v1.woff2",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://www.cnn.com/fonts/cnn/cnn_sans_display-medium-v1.woff2",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/tws-guthrie.png?c=16x9&q=h_270,w_480,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/lp-hirh-texted-homepage-feature-card-1440x810-20251113161732460.jpg?c=16x9&q=h_270,w_480,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/1440x810-texted-key-art-for-show-page-5-20260212190842409.jpg?c=16x9&q=h_270,w_480,c_fill",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2256641607.jpg?c=16x9&q=h_438,w_780,c_fill",
+        "resourceType": "image"
+      }
+    ]
+  },
+  "artifacts": {
+    "screenshotPath": "/tmp/consent-compass-www.cnn.com-1771450123538.png"
+  },
+  "findings": [
+    {
+      "id": "choice.symmetry.reject_missing",
+      "title": "Reject / ‘Only necessary’ option not found on first layer",
+      "severity": "warn",
+      "detail": "We found an ‘accept’ action but no equally-visible ‘reject’ action on the first layer. A preferences/settings path exists, which often adds friction to rejecting.",
+      "evidence": {
+        "kind": "text",
+        "value": "accept: sudoku, .st0 {\n        fill: #4285f4;\n      }\n\n      .st1 {\n        fill: #a6a6a6;\n     , .st0 {\n        fill: #4285f4;\n      }\n\n      .st1 {\n        fill: #a6a6a6;\n     "
+      }
+    },
+    {
+      "id": "transparency.banner_detected",
+      "title": "Consent UI appears present",
+      "severity": "info",
+      "detail": "A consent interface was detected via text/selector heuristics. v0 also captures pre-consent cookies/requests and a rough click-friction estimate."
+    },
+    {
+      "id": "preconsent.cookies.present",
+      "title": "Cookies detected before any consent interaction",
+      "severity": "warn",
+      "detail": "Cookies exist immediately after page load (before we clicked anything). Some may be essential, but this is a key signal to investigate for non-essential tracking.",
+      "evidence": {
+        "kind": "text",
+        "value": "SecGpc, countryCode, stateCode, FastAB, wbdFch, usprivacy"
+      }
+    }
+  ],
+  "meta": {
+    "userAgent": "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari",
+    "tookMs": 3561
+  }
+}

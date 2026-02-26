@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#0a0a0a"/>
+  <rect width="512" height="512" rx="112" fill="url(#surfaceGradient)" opacity="0.5"/>
+  <rect x="2" y="2" width="508" height="508" rx="110" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+  
+  <g transform="translate(256, 256)">
+    <!-- Outer Ring -->
+    <circle cx="0" cy="0" r="140" stroke="#34d399" stroke-width="16" stroke-dasharray="40 20" fill="none" opacity="0.3"/>
+    
+    <!-- Inner Ring -->
+    <circle cx="0" cy="0" r="80" stroke="#34d399" stroke-width="12" fill="none"/>
+    
+    <!-- Center Node -->
+    <circle cx="0" cy="0" r="24" fill="#34d399"/>
+    
+    <!-- Compass Needles -->
+    <path d="M0 -80 L20 -20 L80 0 L20 20 L0 80 L-20 20 L-80 0 L-20 -20 Z" fill="#ffffff" opacity="0.9"/>
+  </g>
+
+  <defs>
+    <linearGradient id="surfaceGradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

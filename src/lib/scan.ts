@@ -13,8 +13,13 @@ import {
   type ButtonVisualData,
 } from "@/lib/heuristics";
 import { classifyTrackerDomain } from "@/lib/trackers";
+import {
+  analyzeCognitiveFriction,
+  calculateFrictionScore,
+  generateFrictionFindings,
+} from "@/lib/friction";
 
-const SCANNER_VERSION = "0.5.0"; // Added WhoTracksMe tracker classification
+const SCANNER_VERSION = "0.6.0"; // Added friction scoring with cognitive pattern detection
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -181,6 +186,36 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     const visualAnalysis = analyzeButtonVisuals(buttonVisuals);
     const visualFindings = generateVisualFindings(visualAnalysis);
     findings.push(...visualFindings);
+
+    // =========================================================================
+    // FRICTION SCORING: Click, visual, and cognitive friction
+    // =========================================================================
+    // Extract banner text for cognitive analysis
+    let bannerText = "";
+    if (matchedSelectors.length > 0) {
+      try {
+        // Get text from first matched consent element
+        const bannerEl = page.locator(matchedSelectors[0]).first();
+        bannerText = await bannerEl.innerText().catch(() => "");
+      } catch {
+        // Fall back to checking common banner selectors
+      }
+    }
+
+    // Analyze cognitive friction patterns
+    const cognitiveResult = analyzeCognitiveFriction(bannerText);
+
+    // Calculate overall friction score
+    const frictionScore = calculateFrictionScore(
+      acceptClicks,
+      rejectClicks,
+      visualAnalysis.asymmetryScore,
+      cognitiveResult
+    );
+
+    // Generate friction findings
+    const frictionFindings = generateFrictionFindings(frictionScore, cognitiveResult);
+    findings.push(...frictionFindings);
 
     if (!bannerDetected) {
       findings.push({
@@ -531,6 +566,13 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       friction: {
         acceptClicks,
         rejectClicks,
+        overallScore: frictionScore.overall,
+        clickAsymmetry: frictionScore.clickAsymmetry,
+        cognitiveScore: frictionScore.cognitive,
+        cognitivePatterns: cognitiveResult.patterns.map(p => p.type),
+        asymmetryScore: visualAnalysis.asymmetryScore,
+        acceptPath: [],
+        rejectPath: [],
         notes: frictionNotes,
       },
       preConsent: {

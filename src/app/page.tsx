@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import type { ScanResult } from "@/lib/types";
-import { ScanForm, ScanResults, ResultsSidebar, LoadingSkeleton, EmptyState } from "@/components";
+import {
+  ScanForm,
+  ScanResults,
+  ResultsSidebar,
+  LoadingSkeleton,
+  EmptyState,
+} from "@/components";
 
 export default function Home() {
   const [url, setUrl] = useState("https://example.com");
@@ -33,11 +39,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#05060a] text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white/90 font-sans tracking-normal selection:bg-emerald-500/30">
       <div className="mx-auto max-w-5xl px-6 py-12">
         {/* Header */}
         <header className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/[8%] bg-white/[3%] px-4 py-2 text-xs text-white/70">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121212] px-3 py-1.5 text-xs font-medium text-white/60">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -45,9 +51,12 @@ export default function Home() {
             Consent Compass v0 — evidence-first consent scan
           </div>
 
-          <h1 className="text-4xl font-semibold leading-tight tracking-tight">Consent Compass</h1>
+          <h1 className="text-4xl font-semibold leading-none tracking-tighter sm:text-5xl md:text-6xl text-white">
+            Consent Compass
+          </h1>
           <p className="max-w-xl text-white/60">
-            Enter a URL. We&apos;ll detect consent banners and generate an evidence-based compliance report.
+            Enter a URL. We&apos;ll detect consent banners and generate an
+            evidence-based compliance report.
           </p>
         </header>
 
@@ -76,7 +85,8 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-12 text-xs text-white/30">
-          v0 — Heuristic scan. Next: interaction replay, click-friction symmetry, pre-consent evidence deep-dive.
+          v0 — Heuristic scan. Next: interaction replay, click-friction
+          symmetry, pre-consent evidence deep-dive.
         </footer>
       </div>
     </div>

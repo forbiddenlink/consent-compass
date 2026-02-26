@@ -1,0 +1,68 @@
+{
+  "status": "ok",
+  "url": "https://www.reddit.com",
+  "scannedAt": "2026-02-18T21:28:51.568Z",
+  "score": {
+    "choiceSymmetry": 80,
+    "preConsentSignals": 65,
+    "accessibility": 80,
+    "transparency": 70,
+    "overall": 74
+  },
+  "banner": {
+    "detected": false,
+    "confidence": 0,
+    "selectors": [],
+    "acceptButtons": [],
+    "rejectButtons": [],
+    "managePrefsButtons": []
+  },
+  "friction": {
+    "notes": []
+  },
+  "preConsent": {
+    "cookies": [
+      {
+        "name": "csv",
+        "domain": ".reddit.com",
+        "path": "/"
+      },
+      {
+        "name": "edgebucket",
+        "domain": ".reddit.com",
+        "path": "/"
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.reddit.com/",
+        "resourceType": "document"
+      }
+    ]
+  },
+  "artifacts": {
+    "screenshotPath": "/tmp/consent-compass-www.reddit.com-1771450131535.png"
+  },
+  "findings": [
+    {
+      "id": "banner.missing",
+      "title": "No obvious consent banner detected",
+      "severity": "warn",
+      "detail": "Consent Compass didn’t find common CMP/banner patterns. This can be okay (no non-essential cookies), or it can mean the banner is hidden behind an interaction we didn’t trigger in v0."
+    },
+    {
+      "id": "preconsent.cookies.present",
+      "title": "Cookies detected before any consent interaction",
+      "severity": "warn",
+      "detail": "Cookies exist immediately after page load (before we clicked anything). Some may be essential, but this is a key signal to investigate for non-essential tracking.",
+      "evidence": {
+        "kind": "text",
+        "value": "csv, edgebucket"
+      }
+    }
+  ],
+  "meta": {
+    "userAgent": "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari",
+    "tookMs": 1693
+  }
+}

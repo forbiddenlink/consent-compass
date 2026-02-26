@@ -72,9 +72,9 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [ ] Detect shadow DOM consent banners
 
 ### 3.3 Friction Scoring
-- [ ] Time-based friction (how long to reject)
-- [ ] Cognitive friction (confusing language)
-- [ ] Overall friction score (0-100)
+- [x] Click asymmetry scoring (extra clicks to reject)
+- [x] Cognitive friction (dark pattern language detection)
+- [x] Overall friction score (0-100, weighted combination)
 
 ---
 
@@ -127,7 +127,7 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 
 - [x] Extract inline components to src/components/
 - [x] Add TypeScript strict mode
-- [x] Set up Vitest test framework (267 tests)
+- [x] Set up Vitest test framework (304 tests)
 - [x] Set up CI/CD pipeline (GitHub Actions)
 - [x] Extract heuristics to testable module (heuristics.ts with 97.87% coverage)
 - [ ] Document API with OpenAPI spec
