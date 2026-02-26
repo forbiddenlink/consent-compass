@@ -136,6 +136,14 @@ export type ScanResult = {
     honored: boolean;
   };
 
+  // Dark pattern detection results
+  darkPatterns?: {
+    visualAsymmetry: number; // 0-100, higher = more asymmetric
+    sizeRatio?: number; // accept area / reject area
+    contrastDifference?: number; // accept contrast - reject contrast
+    issues: string[];
+  };
+
   artifacts: {
     screenshotPath?: string;
     bannerScreenshotPath?: string;

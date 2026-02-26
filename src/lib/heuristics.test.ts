@@ -18,6 +18,14 @@ import {
   generateGCMFindings,
   compareCookies,
   generatePostConsentFindings,
+  // Visual analysis
+  parseColor,
+  getLuminance,
+  getContrastRatio,
+  analyzeButtonVisuals,
+  generateVisualFindings,
+  type ButtonVisualData,
+  type VisualAnalysisResult,
 } from "./heuristics";
 import type { ConsentFinding, CategorizedCookie } from "./types";
 
@@ -998,5 +1006,202 @@ describe("generatePostConsentFindings", () => {
     });
     const marketing = findings.find((f) => f.id === "postconsent.violation.marketing");
     expect(marketing!.evidence?.value.split(", ")).toHaveLength(5);
+  });
+});
+
+// ============================================================================
+// Visual Analysis Tests
+// ============================================================================
+
+describe("parseColor", () => {
+  it("parses 6-digit hex colors", () => {
+    expect(parseColor("#ffffff")).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor("#000000")).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor("#ff5733")).toEqual({ r: 255, g: 87, b: 51 });
+  });
+
+  it("parses 3-digit hex colors", () => {
+    expect(parseColor("#fff")).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor("#000")).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor("#f00")).toEqual({ r: 255, g: 0, b: 0 });
+  });
+
+  it("parses rgb() colors", () => {
+    expect(parseColor("rgb(255, 255, 255)")).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor("rgb(0, 0, 0)")).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseColor("rgb(100, 150, 200)")).toEqual({ r: 100, g: 150, b: 200 });
+  });
+
+  it("parses rgba() colors", () => {
+    expect(parseColor("rgba(255, 255, 255, 1)")).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor("rgba(100, 150, 200, 0.5)")).toEqual({ r: 100, g: 150, b: 200 });
+  });
+
+  it("handles whitespace and case variations", () => {
+    expect(parseColor("  #FFF  ")).toEqual({ r: 255, g: 255, b: 255 });
+    expect(parseColor("RGB(10,20,30)")).toEqual({ r: 10, g: 20, b: 30 });
+  });
+
+  it("returns null for invalid colors", () => {
+    expect(parseColor("")).toBeNull();
+    expect(parseColor("invalid")).toBeNull();
+    expect(parseColor("#gg0000")).toBeNull();
+    expect(parseColor("#12345")).toBeNull();
+  });
+});
+
+describe("getLuminance", () => {
+  it("calculates luminance for white", () => {
+    const lum = getLuminance(255, 255, 255);
+    expect(lum).toBeCloseTo(1.0, 2);
+  });
+
+  it("calculates luminance for black", () => {
+    const lum = getLuminance(0, 0, 0);
+    expect(lum).toBeCloseTo(0.0, 2);
+  });
+
+  it("calculates luminance for mid-gray", () => {
+    const lum = getLuminance(128, 128, 128);
+    expect(lum).toBeGreaterThan(0.2);
+    expect(lum).toBeLessThan(0.3);
+  });
+});
+
+describe("getContrastRatio", () => {
+  it("returns 21:1 for black on white", () => {
+    const ratio = getContrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 });
+    expect(ratio).toBeCloseTo(21, 0);
+  });
+
+  it("returns 1:1 for same colors", () => {
+    const ratio = getContrastRatio({ r: 100, g: 100, b: 100 }, { r: 100, g: 100, b: 100 });
+    expect(ratio).toBeCloseTo(1, 0);
+  });
+
+  it("returns same ratio regardless of order", () => {
+    const ratio1 = getContrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 });
+    const ratio2 = getContrastRatio({ r: 255, g: 255, b: 255 }, { r: 0, g: 0, b: 0 });
+    expect(ratio1).toBeCloseTo(ratio2, 2);
+  });
+
+  it("calculates typical button contrast", () => {
+    // Blue button with white text
+    const ratio = getContrastRatio({ r: 25, g: 118, b: 210 }, { r: 255, g: 255, b: 255 });
+    expect(ratio).toBeGreaterThan(3); // Should pass WCAG AA for large text
+  });
+});
+
+describe("analyzeButtonVisuals", () => {
+  it("returns zero asymmetry when buttons are similar", () => {
+    const buttons: ButtonVisualData[] = [
+      { text: "Accept", role: "accept", width: 100, height: 40, backgroundColor: "#1976d2", textColor: "#ffffff" },
+      { text: "Reject", role: "reject", width: 100, height: 40, backgroundColor: "#1976d2", textColor: "#ffffff" },
+    ];
+    const result = analyzeButtonVisuals(buttons);
+    expect(result.asymmetryScore).toBe(0);
+    expect(result.issues).toHaveLength(0);
+  });
+
+  it("detects size asymmetry when accept is much larger", () => {
+    const buttons: ButtonVisualData[] = [
+      { text: "Accept All", role: "accept", width: 200, height: 60, backgroundColor: "#4caf50", textColor: "#ffffff" },
+      { text: "Reject", role: "reject", width: 80, height: 30, backgroundColor: "#9e9e9e", textColor: "#ffffff" },
+    ];
+    const result = analyzeButtonVisuals(buttons);
+    expect(result.sizeRatio).toBeGreaterThan(4);
+    expect(result.asymmetryScore).toBeGreaterThan(30);
+    expect(result.issues.some((i) => i.includes("larger"))).toBe(true);
+  });
+
+  it("detects contrast failure on reject button", () => {
+    const buttons: ButtonVisualData[] = [
+      { text: "Accept", role: "accept", width: 100, height: 40, backgroundColor: "#1976d2", textColor: "#ffffff" },
+      // Light gray text on light background - poor contrast
+      { text: "Reject", role: "reject", width: 100, height: 40, backgroundColor: "#f5f5f5", textColor: "#bdbdbd" },
+    ];
+    const result = analyzeButtonVisuals(buttons);
+    expect(result.rejectButton?.contrastRatio).toBeLessThan(4.5);
+    expect(result.asymmetryScore).toBeGreaterThan(0);
+    expect(result.issues.some((i) => i.includes("WCAG"))).toBe(true);
+  });
+
+  it("returns empty result when missing accept or reject button", () => {
+    const buttons: ButtonVisualData[] = [
+      { text: "Settings", role: "manage", width: 100, height: 40, backgroundColor: "#1976d2", textColor: "#ffffff" },
+    ];
+    const result = analyzeButtonVisuals(buttons);
+    expect(result.asymmetryScore).toBe(0);
+    expect(result.acceptButton).toBeUndefined();
+    expect(result.rejectButton).toBeUndefined();
+  });
+
+  it("calculates correct contrast ratio for buttons", () => {
+    const buttons: ButtonVisualData[] = [
+      { text: "Accept", role: "accept", width: 100, height: 40, backgroundColor: "#000000", textColor: "#ffffff" },
+      { text: "Reject", role: "reject", width: 100, height: 40, backgroundColor: "#000000", textColor: "#ffffff" },
+    ];
+    const result = analyzeButtonVisuals(buttons);
+    expect(result.acceptButton?.contrastRatio).toBeCloseTo(21, 0);
+    expect(result.rejectButton?.contrastRatio).toBeCloseTo(21, 0);
+  });
+});
+
+describe("generateVisualFindings", () => {
+  it("generates dark pattern finding for high asymmetry", () => {
+    const analysis: VisualAnalysisResult = {
+      asymmetryScore: 65,
+      issues: ["Accept button is 3.0x larger than reject"],
+      acceptButton: { text: "Accept", role: "accept", width: 200, height: 60, backgroundColor: "#4caf50", textColor: "#ffffff", area: 12000, contrastRatio: 5.5 },
+      rejectButton: { text: "Reject", role: "reject", width: 80, height: 30, backgroundColor: "#9e9e9e", textColor: "#ffffff", area: 2400, contrastRatio: 4.0 },
+      sizeRatio: 5,
+    };
+    const findings = generateVisualFindings(analysis);
+    expect(findings.some((f) => f.id === "darkpattern.visual_asymmetry")).toBe(true);
+    expect(findings.find((f) => f.id === "darkpattern.visual_asymmetry")?.severity).toBe("fail");
+  });
+
+  it("generates warning for moderate asymmetry", () => {
+    const analysis: VisualAnalysisResult = {
+      asymmetryScore: 35,
+      issues: ["Reject button fails WCAG AA contrast"],
+      rejectButton: { text: "Reject", role: "reject", width: 100, height: 40, backgroundColor: "#f5f5f5", textColor: "#bdbdbd", area: 4000, contrastRatio: 1.5 },
+    };
+    const findings = generateVisualFindings(analysis);
+    expect(findings.some((f) => f.id === "darkpattern.visual_asymmetry")).toBe(true);
+    expect(findings.find((f) => f.id === "darkpattern.visual_asymmetry")?.severity).toBe("warn");
+  });
+
+  it("generates accessibility finding for WCAG contrast failure", () => {
+    const analysis: VisualAnalysisResult = {
+      asymmetryScore: 0,
+      issues: [],
+      rejectButton: { text: "Reject", role: "reject", width: 100, height: 40, backgroundColor: "#f5f5f5", textColor: "#bdbdbd", area: 4000, contrastRatio: 1.5 },
+    };
+    const findings = generateVisualFindings(analysis);
+    expect(findings.some((f) => f.id === "accessibility.contrast.reject_button")).toBe(true);
+    expect(findings.find((f) => f.id === "accessibility.contrast.reject_button")?.severity).toBe("fail");
+  });
+
+  it("generates size asymmetry finding for very large difference", () => {
+    const analysis: VisualAnalysisResult = {
+      asymmetryScore: 45,
+      issues: ["Accept button is 3.5x larger than reject"],
+      sizeRatio: 3.5,
+    };
+    const findings = generateVisualFindings(analysis);
+    expect(findings.some((f) => f.id === "darkpattern.size_asymmetry")).toBe(true);
+  });
+
+  it("returns empty findings for good design", () => {
+    const analysis: VisualAnalysisResult = {
+      asymmetryScore: 0,
+      issues: [],
+      acceptButton: { text: "Accept", role: "accept", width: 100, height: 40, backgroundColor: "#1976d2", textColor: "#ffffff", area: 4000, contrastRatio: 7.0 },
+      rejectButton: { text: "Reject", role: "reject", width: 100, height: 40, backgroundColor: "#1976d2", textColor: "#ffffff", area: 4000, contrastRatio: 7.0 },
+      sizeRatio: 1,
+    };
+    const findings = generateVisualFindings(analysis);
+    expect(findings).toHaveLength(0);
   });
 });

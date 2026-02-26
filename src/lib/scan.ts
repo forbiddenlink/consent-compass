@@ -8,9 +8,12 @@ import {
   classifyButtonText,
   compareCookies,
   generatePostConsentFindings,
+  analyzeButtonVisuals,
+  generateVisualFindings,
+  type ButtonVisualData,
 } from "@/lib/heuristics";
 
-const SCANNER_VERSION = "0.3.0"; // Bumped for post-consent comparison
+const SCANNER_VERSION = "0.4.0"; // Added visual button analysis for dark pattern detection
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -74,6 +77,7 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     const acceptButtons: string[] = [];
     const rejectButtons: string[] = [];
     const managePrefsButtons: string[] = [];
+    const buttonVisuals: ButtonVisualData[] = [];
 
     // Search visible-ish buttons/links by their text.
     const clickable = page.locator("button, [role='button'], a");
@@ -87,6 +91,38 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       if (classification === "accept") acceptButtons.push(text.toLowerCase().slice(0, 80));
       if (classification === "reject") rejectButtons.push(text.toLowerCase().slice(0, 80));
       if (classification === "manage") managePrefsButtons.push(text.toLowerCase().slice(0, 80));
+
+      // Capture visual data for accept and reject buttons (first of each type)
+      if (
+        (classification === "accept" || classification === "reject") &&
+        !buttonVisuals.some((b) => b.role === classification)
+      ) {
+        try {
+          const isVisible = await el.isVisible().catch(() => false);
+          if (isVisible) {
+            const box = await el.boundingBox();
+            const styles = await el.evaluate((node) => {
+              const computed = window.getComputedStyle(node);
+              return {
+                backgroundColor: computed.backgroundColor,
+                color: computed.color,
+              };
+            });
+            if (box) {
+              buttonVisuals.push({
+                text: text.slice(0, 80),
+                role: classification,
+                width: Math.round(box.width),
+                height: Math.round(box.height),
+                backgroundColor: styles.backgroundColor,
+                textColor: styles.color,
+              });
+            }
+          }
+        } catch {
+          // Ignore visual capture errors
+        }
+      }
 
       if (acceptButtons.length > 10 && rejectButtons.length > 10 && managePrefsButtons.length > 10) break;
     }
@@ -129,8 +165,15 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     if (rejectButtons.length > 0) rejectClicks = 1;
     else if (managePrefsButtons.length > 0 && acceptButtons.length > 0) {
       rejectClicks = 2;
-      frictionNotes.push("No obvious ‘Reject all’ found; ‘Preferences/Settings’ present (likely 2+ step rejection)." );
+      frictionNotes.push("No obvious 'Reject all' found; 'Preferences/Settings' present (likely 2+ step rejection)." );
     }
+
+    // =========================================================================
+    // VISUAL BUTTON ANALYSIS: Dark pattern detection
+    // =========================================================================
+    const visualAnalysis = analyzeButtonVisuals(buttonVisuals);
+    const visualFindings = generateVisualFindings(visualAnalysis);
+    findings.push(...visualFindings);
 
     if (!bannerDetected) {
       findings.push({
@@ -424,7 +467,28 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         acceptButtons: acceptButtons.slice(0, 10),
         rejectButtons: rejectButtons.slice(0, 10),
         managePrefsButtons: managePrefsButtons.slice(0, 10),
+        buttons: buttonVisuals.length > 0 ? buttonVisuals.map((b) => ({
+          text: b.text,
+          selector: "", // Not captured yet
+          role: b.role,
+          width: b.width,
+          height: b.height,
+          backgroundColor: b.backgroundColor,
+          textColor: b.textColor,
+          contrastRatio: visualAnalysis.acceptButton?.role === b.role
+            ? visualAnalysis.acceptButton.contrastRatio
+            : visualAnalysis.rejectButton?.role === b.role
+              ? visualAnalysis.rejectButton.contrastRatio
+              : undefined,
+          isProminent: b.role === "accept" && (visualAnalysis.sizeRatio ?? 0) > 1.5 ? true : undefined,
+        })) : undefined,
       },
+      darkPatterns: visualAnalysis.asymmetryScore > 0 ? {
+        visualAsymmetry: visualAnalysis.asymmetryScore,
+        sizeRatio: visualAnalysis.sizeRatio,
+        contrastDifference: visualAnalysis.contrastDifference,
+        issues: visualAnalysis.issues,
+      } : undefined,
       friction: {
         acceptClicks,
         rejectClicks,

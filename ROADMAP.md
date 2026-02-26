@@ -60,10 +60,10 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 ## Phase 3: Dark Pattern Detection
 
 ### 3.1 Visual Button Analysis
-- [ ] Capture button bounding boxes
-- [ ] Calculate size ratio (accept vs reject)
-- [ ] Check color contrast ratios (WCAG 4.5:1)
-- [ ] Score visual prominence asymmetry
+- [x] Capture button bounding boxes
+- [x] Calculate size ratio (accept vs reject)
+- [x] Check color contrast ratios (WCAG 4.5:1)
+- [x] Score visual prominence asymmetry
 
 ### 3.2 Multi-Layer CMP Detection
 - [ ] Actually click through preference layers

@@ -482,3 +482,220 @@ export function generatePostConsentFindings(comparison: CookieComparisonResult):
 
   return findings;
 }
+
+// ============================================================================
+// Visual Button Analysis - Dark Pattern Detection
+// ============================================================================
+
+/**
+ * Parse a CSS color string to RGB values.
+ * Supports: hex (#fff, #ffffff), rgb(), rgba()
+ */
+export function parseColor(color: string): { r: number; g: number; b: number } | null {
+  if (!color) return null;
+
+  const trimmed = color.trim().toLowerCase();
+
+  // Hex format: #fff or #ffffff
+  if (trimmed.startsWith("#")) {
+    let hex = trimmed.slice(1);
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) return null;
+
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+    return { r, g, b };
+  }
+
+  // RGB/RGBA format: rgb(255, 255, 255) or rgba(255, 255, 255, 1)
+  const rgbMatch = trimmed.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (rgbMatch) {
+    return {
+      r: parseInt(rgbMatch[1], 10),
+      g: parseInt(rgbMatch[2], 10),
+      b: parseInt(rgbMatch[3], 10),
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Calculate relative luminance per WCAG 2.1 formula.
+ * https://www.w3.org/WAI/GL/wiki/Relative_luminance
+ */
+export function getLuminance(r: number, g: number, b: number): number {
+  const [rs, gs, bs] = [r, g, b].map((c) => {
+    const sRGB = c / 255;
+    return sRGB <= 0.03928 ? sRGB / 12.92 : Math.pow((sRGB + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+/**
+ * Calculate WCAG contrast ratio between two colors.
+ * Returns a value between 1 (no contrast) and 21 (max contrast).
+ * WCAG AA requires 4.5:1 for normal text, 3:1 for large text.
+ */
+export function getContrastRatio(
+  color1: { r: number; g: number; b: number },
+  color2: { r: number; g: number; b: number }
+): number {
+  const l1 = getLuminance(color1.r, color1.g, color1.b);
+  const l2 = getLuminance(color2.r, color2.g, color2.b);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Button visual data captured from the page.
+ */
+export interface ButtonVisualData {
+  text: string;
+  role: "accept" | "reject" | "manage" | "unknown";
+  width: number;
+  height: number;
+  backgroundColor: string;
+  textColor: string;
+}
+
+/**
+ * Result of visual button analysis.
+ */
+export interface VisualAnalysisResult {
+  acceptButton?: ButtonVisualData & { area: number; contrastRatio: number };
+  rejectButton?: ButtonVisualData & { area: number; contrastRatio: number };
+  sizeRatio?: number; // accept area / reject area (>1 means accept is larger)
+  contrastDifference?: number; // accept contrast - reject contrast
+  asymmetryScore: number; // 0-100, higher = more asymmetric (dark pattern)
+  issues: string[];
+}
+
+/**
+ * Analyze visual button data for dark patterns.
+ */
+export function analyzeButtonVisuals(buttons: ButtonVisualData[]): VisualAnalysisResult {
+  const result: VisualAnalysisResult = {
+    asymmetryScore: 0,
+    issues: [],
+  };
+
+  const acceptBtn = buttons.find((b) => b.role === "accept");
+  const rejectBtn = buttons.find((b) => b.role === "reject");
+
+  if (!acceptBtn || !rejectBtn) {
+    // Can't compare if we don't have both buttons
+    return result;
+  }
+
+  // Calculate areas
+  const acceptArea = acceptBtn.width * acceptBtn.height;
+  const rejectArea = rejectBtn.width * rejectBtn.height;
+
+  // Calculate contrast ratios
+  const acceptBg = parseColor(acceptBtn.backgroundColor);
+  const acceptFg = parseColor(acceptBtn.textColor);
+  const rejectBg = parseColor(rejectBtn.backgroundColor);
+  const rejectFg = parseColor(rejectBtn.textColor);
+
+  const acceptContrast = acceptBg && acceptFg ? getContrastRatio(acceptBg, acceptFg) : 0;
+  const rejectContrast = rejectBg && rejectFg ? getContrastRatio(rejectBg, rejectFg) : 0;
+
+  result.acceptButton = { ...acceptBtn, area: acceptArea, contrastRatio: acceptContrast };
+  result.rejectButton = { ...rejectBtn, area: rejectArea, contrastRatio: rejectContrast };
+
+  // Calculate ratios
+  if (rejectArea > 0) {
+    result.sizeRatio = acceptArea / rejectArea;
+  }
+  result.contrastDifference = acceptContrast - rejectContrast;
+
+  // Score asymmetry (0-100)
+  let asymmetryScore = 0;
+
+  // Size asymmetry: penalize if accept is significantly larger
+  if (result.sizeRatio && result.sizeRatio > 1.5) {
+    // Accept button is 1.5x+ larger
+    const sizePenalty = Math.min(40, (result.sizeRatio - 1) * 20);
+    asymmetryScore += sizePenalty;
+    if (result.sizeRatio > 2) {
+      result.issues.push(`Accept button is ${result.sizeRatio.toFixed(1)}x larger than reject`);
+    }
+  }
+
+  // Contrast asymmetry: penalize if reject has poor contrast
+  if (rejectContrast > 0 && rejectContrast < 4.5) {
+    // WCAG AA failure
+    const contrastPenalty = Math.min(30, (4.5 - rejectContrast) * 10);
+    asymmetryScore += contrastPenalty;
+    result.issues.push(`Reject button fails WCAG AA contrast (${rejectContrast.toFixed(2)}:1, needs 4.5:1)`);
+  }
+
+  // Contrast difference: penalize if accept has much better contrast
+  if (result.contrastDifference && result.contrastDifference > 3) {
+    const diffPenalty = Math.min(30, result.contrastDifference * 5);
+    asymmetryScore += diffPenalty;
+    result.issues.push(`Accept button has significantly better contrast than reject`);
+  }
+
+  result.asymmetryScore = Math.min(100, Math.round(asymmetryScore));
+
+  return result;
+}
+
+/**
+ * Generate dark pattern findings from visual analysis.
+ */
+export function generateVisualFindings(analysis: VisualAnalysisResult): ConsentFinding[] {
+  const findings: ConsentFinding[] = [];
+
+  if (analysis.asymmetryScore >= 30) {
+    findings.push({
+      id: "darkpattern.visual_asymmetry",
+      title: "Visual asymmetry detected between accept and reject buttons",
+      severity: analysis.asymmetryScore >= 60 ? "fail" : "warn",
+      category: "dark-pattern",
+      detail:
+        "The accept button is visually more prominent than the reject button. " +
+        `Asymmetry score: ${analysis.asymmetryScore}/100. Issues: ${analysis.issues.join("; ")}`,
+      evidence: {
+        kind: "text",
+        value: analysis.issues.join("; ") || "Visual prominence difference detected",
+      },
+    });
+  }
+
+  // WCAG contrast failure is always a finding
+  if (analysis.rejectButton && analysis.rejectButton.contrastRatio > 0 && analysis.rejectButton.contrastRatio < 4.5) {
+    findings.push({
+      id: "accessibility.contrast.reject_button",
+      title: "Reject button fails WCAG contrast requirements",
+      severity: analysis.rejectButton.contrastRatio < 3 ? "fail" : "warn",
+      category: "accessibility",
+      detail:
+        `The reject button has a contrast ratio of ${analysis.rejectButton.contrastRatio.toFixed(2)}:1. ` +
+        "WCAG AA requires a minimum of 4.5:1 for normal text, 3:1 for large text.",
+    });
+  }
+
+  // Size ratio finding
+  if (analysis.sizeRatio && analysis.sizeRatio > 2.5) {
+    findings.push({
+      id: "darkpattern.size_asymmetry",
+      title: "Accept button significantly larger than reject button",
+      severity: "warn",
+      category: "dark-pattern",
+      detail:
+        `The accept button is ${analysis.sizeRatio.toFixed(1)}x larger than the reject button. ` +
+        "This design pattern may unfairly influence user choice.",
+    });
+  }
+
+  return findings;
+}
