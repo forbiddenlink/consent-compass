@@ -12,8 +12,9 @@ import {
   generateVisualFindings,
   type ButtonVisualData,
 } from "@/lib/heuristics";
+import { classifyTrackerDomain } from "@/lib/trackers";
 
-const SCANNER_VERSION = "0.4.0"; // Added visual button analysis for dark pattern detection
+const SCANNER_VERSION = "0.5.0"; // Added WhoTracksMe tracker classification
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -35,11 +36,17 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     } catch {
       domain = "unknown";
     }
+
+    // Classify domain using WhoTracksMe database
+    const trackerInfo = classifyTrackerDomain(domain);
+
     preConsentRequests.push({
       url: reqUrl,
       resourceType: req.resourceType(),
       domain,
-      isTracker: false, // Will be enhanced with tracker database later
+      isTracker: trackerInfo !== null,
+      trackerCategory: trackerInfo?.category,
+      vendor: trackerInfo?.tracker,
     });
   });
 
@@ -254,6 +261,38 @@ export async function scanUrl(url: string): Promise<ScanResult> {
           detail: `Found ${cookiesByCategory.necessary} necessary and ${cookiesByCategory.functional} functional cookies. These typically don't require consent.`,
         });
       }
+    }
+
+    // =========================================================================
+    // PRE-CONSENT TRACKER DETECTION
+    // =========================================================================
+    const trackerRequests = preConsentRequests.filter((r) => r.isTracker);
+    if (trackerRequests.length > 0) {
+      // Group by category for reporting
+      const byCategory: Record<string, TrackedRequest[]> = {};
+      for (const req of trackerRequests) {
+        const cat = req.trackerCategory || "unknown";
+        if (!byCategory[cat]) byCategory[cat] = [];
+        byCategory[cat].push(req);
+      }
+
+      // Advertising trackers are the most severe
+      const hasAdTrackers = (byCategory.advertising?.length ?? 0) > 0;
+      const uniqueTrackers = [...new Set(trackerRequests.map((r) => r.vendor).filter(Boolean))];
+
+      findings.push({
+        id: "preconsent.trackers.detected",
+        title: `${trackerRequests.length} tracker request(s) detected before consent`,
+        severity: hasAdTrackers ? "fail" : "warn",
+        category: "pre-consent",
+        detail: hasAdTrackers
+          ? `Advertising trackers were contacted before any user consent. This is a potential GDPR violation.`
+          : `Tracker requests were made before consent. Categories: ${Object.keys(byCategory).join(", ")}.`,
+        evidence: {
+          kind: "request",
+          value: uniqueTrackers.slice(0, 6).join(", ") || trackerRequests.slice(0, 3).map((r) => r.domain).join(", "),
+        },
+      });
     }
 
     // =========================================================================

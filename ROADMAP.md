@@ -51,9 +51,9 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [x] Report missing or misconfigured signals
 
 ### 2.4 Tracker Database
-- [ ] Integrate WhoTracksMe domain list
+- [x] Integrate WhoTracksMe domain list (3,581 domains)
 - [x] Flag known trackers in pre-consent requests
-- [ ] Classify by type (analytics, advertising, fingerprinting)
+- [x] Classify by type (analytics, advertising, fingerprinting, social)
 
 ---
 
@@ -127,7 +127,7 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 
 - [x] Extract inline components to src/components/
 - [x] Add TypeScript strict mode
-- [x] Set up Vitest test framework (204 tests)
+- [x] Set up Vitest test framework (267 tests)
 - [x] Set up CI/CD pipeline (GitHub Actions)
 - [x] Extract heuristics to testable module (heuristics.ts with 97.87% coverage)
 - [ ] Document API with OpenAPI spec
