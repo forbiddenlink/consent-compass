@@ -86,7 +86,7 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [ ] Enable trend analysis over time
 
 ### 4.2 Export Formats
-- [ ] PDF report with annotated screenshots
+- [x] PDF report with annotated screenshots
 - [ ] JSON export for integrations
 - [ ] CSV cookie inventory
 
