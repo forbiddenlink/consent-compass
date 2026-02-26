@@ -32,8 +32,14 @@ import {
   generateAccessibilityFindings,
   type AccessibilityResult,
 } from "@/lib/accessibility";
+import {
+  analyzeCompliance,
+  generateComplianceFindings,
+  getGdprComplianceStatus,
+  type ComplianceResult,
+} from "@/lib/compliance";
 
-const SCANNER_VERSION = "0.9.0"; // Added Accessibility Audit (Phase 5.3)
+const SCANNER_VERSION = "0.10.0"; // Added Multi-Regulation Compliance Scoring (Phase 5.1)
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -630,12 +636,70 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       }
     }
 
+    // =========================================================================
+    // MULTI-REGULATION COMPLIANCE ANALYSIS (Phase 5.1)
+    // =========================================================================
+    // Build partial scan result for compliance analysis
+    const partialScanResult = {
+      status: "ok" as const,
+      url,
+      scannedAt: new Date().toISOString(),
+      score: { overall: 0, choiceSymmetry: 0, preConsentSignals: 0, accessibility: 0, transparency: 0 },
+      banner: {
+        detected: bannerDetected,
+        confidence,
+        selectors: matchedSelectors.slice(0, 10),
+        acceptButtons: acceptButtons.slice(0, 10),
+        rejectButtons: rejectButtons.slice(0, 10),
+        managePrefsButtons: managePrefsButtons.slice(0, 10),
+      },
+      friction: {
+        acceptClicks,
+        rejectClicks,
+        overallScore: frictionScore.overall,
+        asymmetryScore: visualAnalysis.asymmetryScore,
+        acceptPath: [] as string[],
+        rejectPath: rejectPath.map(step => `${step.action}: ${step.target}`),
+        notes: frictionNotes,
+      },
+      preConsent: {
+        cookies: preConsentCookies,
+        requests: preConsentRequests.slice(0, 80),
+        cookiesByCategory,
+        trackerCount: preConsentRequests.filter((r) => r.isTracker).length,
+      },
+      darkPatterns: visualAnalysis.asymmetryScore > 0 ? {
+        visualAsymmetry: visualAnalysis.asymmetryScore,
+        sizeRatio: visualAnalysis.sizeRatio,
+        issues: visualAnalysis.issues,
+      } : undefined,
+      gpcSupport: {
+        detected: gpcResult.detected,
+        honored: gpcResult.honored,
+      },
+      artifacts: {},
+      findings: [] as typeof findings,
+      meta: { userAgent: UA, tookMs: 0, scannerVersion: SCANNER_VERSION },
+    };
+
+    const complianceResult: ComplianceResult = analyzeCompliance(partialScanResult);
+
+    // Generate compliance findings
+    const complianceFindings = generateComplianceFindings(complianceResult);
+    findings.push(...complianceFindings);
+
     // Artifact
     const safeHost = new URL(url).hostname.replace(/[^a-z0-9.-]/gi, "_");
     const screenshotPath = `/tmp/consent-compass-${safeHost}-${Date.now()}.png`;
     await page.screenshot({ path: screenshotPath, fullPage: true });
 
-    const score = scoreFromFindings(findings);
+    const baseScore = scoreFromFindings(findings);
+
+    // Build final score with GDPR compliance status
+    const score = {
+      ...baseScore,
+      gdprCompliance: getGdprComplianceStatus(complianceResult),
+    };
 
     return {
       status: "ok",
@@ -672,6 +736,42 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         issues: visualAnalysis.issues,
       } : undefined,
       accessibility: accessibilityResult,
+      compliance: {
+        gdpr: {
+          score: complianceResult.gdpr.score,
+          status: complianceResult.gdpr.status,
+          checks: complianceResult.gdpr.checks.map(c => ({
+            id: c.id,
+            name: c.name,
+            passed: c.passed,
+            required: c.required,
+            details: c.details,
+          })),
+        },
+        ccpa: {
+          score: complianceResult.ccpa.score,
+          status: complianceResult.ccpa.status,
+          checks: complianceResult.ccpa.checks.map(c => ({
+            id: c.id,
+            name: c.name,
+            passed: c.passed,
+            required: c.required,
+            details: c.details,
+          })),
+        },
+        eprivacy: {
+          score: complianceResult.eprivacy.score,
+          status: complianceResult.eprivacy.status,
+          checks: complianceResult.eprivacy.checks.map(c => ({
+            id: c.id,
+            name: c.name,
+            passed: c.passed,
+            required: c.required,
+            details: c.details,
+          })),
+        },
+        overallStatus: complianceResult.overallStatus,
+      },
       friction: {
         acceptClicks,
         rejectClicks,

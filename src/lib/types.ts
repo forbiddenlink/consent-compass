@@ -9,7 +9,7 @@ export type ConsentFinding = {
   title: string;
   severity: Severity;
   detail: string;
-  category?: "friction" | "pre-consent" | "transparency" | "accessibility" | "dark-pattern" | "gcm";
+  category?: "friction" | "pre-consent" | "transparency" | "accessibility" | "dark-pattern" | "gcm" | "compliance";
   evidence?: {
     kind: "text" | "selector" | "cookie" | "request" | "screenshot";
     value: string;
@@ -170,6 +170,44 @@ export type ScanResult = {
       properTrap: boolean;
       issues: string[];
     };
+  };
+
+  // Multi-regulation compliance analysis (Phase 5.1)
+  compliance?: {
+    gdpr: {
+      score: number;
+      status: "pass" | "warn" | "fail";
+      checks: Array<{
+        id: string;
+        name: string;
+        passed: boolean;
+        required: boolean;
+        details?: string;
+      }>;
+    };
+    ccpa: {
+      score: number;
+      status: "pass" | "warn" | "fail";
+      checks: Array<{
+        id: string;
+        name: string;
+        passed: boolean;
+        required: boolean;
+        details?: string;
+      }>;
+    };
+    eprivacy: {
+      score: number;
+      status: "pass" | "warn" | "fail";
+      checks: Array<{
+        id: string;
+        name: string;
+        passed: boolean;
+        required: boolean;
+        details?: string;
+      }>;
+    };
+    overallStatus: "pass" | "warn" | "fail";
   };
 
   artifacts: {

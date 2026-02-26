@@ -105,10 +105,10 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 ## Phase 5: Differentiation
 
 ### 5.1 Multi-Regulation Compliance
-- [ ] GDPR checklist scoring
-- [ ] CCPA/CPRA requirements check
-- [ ] ePrivacy Directive compliance
-- [ ] Region-specific scoring
+- [x] GDPR checklist scoring
+- [x] CCPA/CPRA requirements check
+- [x] ePrivacy Directive compliance
+- [x] Region-specific scoring
 
 ### 5.2 Global Privacy Control
 - [x] Detect GPC signal support
