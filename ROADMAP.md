@@ -8,33 +8,36 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 ## Phase 1: Foundation (Current Sprint)
 
 ### 1.1 Input Validation & Security
-- [ ] URL allowlist/denylist (block localhost, private IPs)
-- [ ] URL normalization (always https, strip fragments)
-- [ ] Output schema validation with Zod
+- [x] URL allowlist/denylist (block localhost, private IPs)
+- [x] URL normalization (always https, strip fragments)
+- [x] Output schema validation with Zod
 
 ### 1.2 Rate Limiting
-- [ ] Per-IP rate limiting (token bucket)
-- [ ] Per-domain concurrency limits
-- [ ] 429 responses with Retry-After header
+- [x] Per-IP rate limiting (token bucket)
+- [x] Per-domain concurrency limits
+- [x] 429 responses with Retry-After header
 
 ### 1.3 Error Handling
-- [ ] Differentiate timeout vs crash vs validation errors
-- [ ] Proper HTTP status codes (504 for timeout, 500 for crash)
-- [ ] Structured error responses
+- [x] Differentiate timeout vs crash vs validation errors
+- [x] Proper HTTP status codes (504 for timeout, 500 for crash)
+- [x] Structured error responses
 
 ### 1.4 Testing
-- [ ] Unit tests for heuristics (button detection, scoring)
-- [ ] Integration tests for API endpoint
-- [ ] Fixture-based tests with sample HTML
+- [x] Unit tests for cookie categorization (31 tests)
+- [x] Unit tests for URL validation (37 tests)
+- [x] Unit tests for rate limiting (17 tests)
+- [x] Unit tests for heuristics (101 tests - button detection, scoring, findings)
+- [x] Integration tests for API endpoint (18 tests)
+- [x] Fixture-based tests with sample HTML (inline fixtures in heuristics.test.ts)
 
 ---
 
 ## Phase 2: Scanner Accuracy
 
 ### 2.1 Cookie Categorization
+- [x] Pattern matching database (189 patterns covering major vendors)
+- [x] Display category in findings (necessary/functional/analytics/marketing)
 - [ ] Integrate Open Cookie Database (10,000+ cookies)
-- [ ] Pattern matching fallback (_ga*, _fbp, etc.)
-- [ ] Display category in findings (necessary/functional/analytics/marketing)
 
 ### 2.2 Post-Consent Comparison
 - [ ] Click accept button after initial scan
@@ -43,13 +46,13 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [ ] Flag violations: cookies that existed before consent
 
 ### 2.3 Google Consent Mode v2
-- [ ] Detect dataLayer consent signals
-- [ ] Verify ad_storage, analytics_storage, ad_user_data, ad_personalization
-- [ ] Report missing or misconfigured signals
+- [x] Detect dataLayer consent signals
+- [x] Verify ad_storage, analytics_storage, ad_user_data, ad_personalization
+- [x] Report missing or misconfigured signals
 
 ### 2.4 Tracker Database
 - [ ] Integrate WhoTracksMe domain list
-- [ ] Flag known trackers in pre-consent requests
+- [x] Flag known trackers in pre-consent requests
 - [ ] Classify by type (analytics, advertising, fingerprinting)
 
 ---
@@ -122,10 +125,11 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 
 ## Technical Debt
 
-- [ ] Extract inline components to src/components/
-- [ ] Add TypeScript strict mode
-- [ ] Set up CI/CD pipeline
-- [ ] Add Playwright test fixtures
+- [x] Extract inline components to src/components/
+- [x] Add TypeScript strict mode
+- [x] Set up Vitest test framework (204 tests)
+- [x] Set up CI/CD pipeline (GitHub Actions)
+- [x] Extract heuristics to testable module (heuristics.ts with 97.87% coverage)
 - [ ] Document API with OpenAPI spec
 
 ---
