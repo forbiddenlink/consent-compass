@@ -81,9 +81,9 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 ## Phase 4: Production Hardening
 
 ### 4.1 Data Persistence
-- [ ] SQLite/Postgres for scan history
-- [ ] Store full scan results as JSONB
-- [ ] Enable trend analysis over time
+- [x] SQLite/Postgres for scan history
+- [x] Store full scan results as JSONB
+- [x] Enable trend analysis over time
 
 ### 4.2 Export Formats
 - [x] PDF report with annotated screenshots
@@ -91,8 +91,8 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [x] CSV cookie inventory
 
 ### 4.3 Historical Comparison
-- [ ] Diff view between scans
-- [ ] Compliance regression alerts
+- [x] Diff view between scans
+- [x] Compliance regression alerts
 - [ ] Weekly automated re-scans
 
 ### 4.4 Screenshot Storage

@@ -13,6 +13,7 @@ import {
   checkDomainLimit,
   getRateLimitHeaders,
 } from "@/lib/rateLimit";
+import { initDb, saveScan } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -120,7 +121,22 @@ export async function POST(req: Request) {
     activeScans++;
     try {
       const result = await scanUrl(urlResult.url);
-      return NextResponse.json(result, { headers: rateLimitHeaders });
+
+      // Save successful scans to database
+      let scanId: number | undefined;
+      if (result.status === "ok") {
+        try {
+          initDb();
+          scanId = saveScan(result);
+        } catch (dbError) {
+          // Log but don't fail the request if DB save fails
+          console.error("[Scan DB Error]", dbError);
+        }
+      }
+
+      // Add scanId to response if available
+      const response = scanId !== undefined ? { ...result, scanId } : result;
+      return NextResponse.json(response, { headers: rateLimitHeaders });
     } finally {
       activeScans--;
     }
