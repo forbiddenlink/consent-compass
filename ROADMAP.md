@@ -93,7 +93,7 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 ### 4.3 Historical Comparison
 - [x] Diff view between scans
 - [x] Compliance regression alerts
-- [ ] Weekly automated re-scans
+- [x] Weekly automated re-scans
 
 ### 4.4 Screenshot Storage
 - [x] Move from /tmp to persistent storage

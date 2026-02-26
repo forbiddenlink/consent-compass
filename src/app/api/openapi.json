@@ -78,6 +78,40 @@
           "500": { "description": "Report generation failed" }
         }
       }
+    },
+    "/api/rescan": {
+      "post": {
+        "summary": "Re-scan domains for compliance changes",
+        "description": "Re-scans domains that have previous scans. Designed to be called by external cron jobs (Vercel Cron, GitHub Actions, etc.) for weekly automated re-scans.",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "query",
+            "description": "Specific domain to re-scan (optional)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of domains to re-scan (default: 10, max: 50)",
+            "schema": { "type": "integer", "default": 10, "maximum": 50 }
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Re-scan completed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RescanResponse" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - API key required" },
+          "404": { "description": "Domain not found (when specific domain requested)" },
+          "500": { "description": "Re-scan failed" }
+        }
+      }
     }
   },
   "components": {
@@ -131,6 +165,38 @@
           "detail": { "type": "string" },
           "category": { "type": "string" }
         }
+      },
+      "RescanResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["ok", "error"] },
+          "scanned": { "type": "integer", "description": "Number of domains re-scanned" },
+          "regressions": { "type": "integer", "description": "Number of domains with score regressions" },
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RescanResult" }
+          }
+        }
+      },
+      "RescanResult": {
+        "type": "object",
+        "properties": {
+          "domain": { "type": "string" },
+          "url": { "type": "string" },
+          "scanId": { "type": "integer", "description": "ID of the new scan" },
+          "previousScanId": { "type": "integer", "description": "ID of the previous scan" },
+          "previousScore": { "type": "integer", "nullable": true },
+          "newScore": { "type": "integer" },
+          "regression": { "type": "boolean", "description": "True if score dropped by 10+ points" },
+          "regressionAmount": { "type": "integer", "description": "Points dropped (only present if regression is true)" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key for automated re-scans. Set RESCAN_API_KEY environment variable."
       }
     }
   }

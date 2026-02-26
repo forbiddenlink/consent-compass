@@ -213,3 +213,70 @@ export function deleteScan(id: number, database?: Database.Database): boolean {
 
   return info.changes > 0;
 }
+
+/**
+ * Domain info for re-scanning.
+ */
+export type DomainForRescan = {
+  domain: string;
+  url: string;
+  lastScanAt: string;
+  lastScanId: number;
+  lastScore: number | null;
+};
+
+/**
+ * Get domains that need re-scanning, ordered by oldest scan first.
+ * Returns one entry per domain (the most recent scan for that domain).
+ */
+export function getDomainsForRescan(
+  limit: number,
+  database?: Database.Database
+): DomainForRescan[] {
+  const dbInstance = database ?? getDb();
+
+  const stmt = dbInstance.prepare(`
+    SELECT
+      domain,
+      url,
+      scanned_at as lastScanAt,
+      id as lastScanId,
+      score as lastScore
+    FROM scans s1
+    WHERE scanned_at = (
+      SELECT MAX(scanned_at)
+      FROM scans s2
+      WHERE s2.domain = s1.domain
+    )
+    ORDER BY scanned_at ASC
+    LIMIT ?
+  `);
+
+  return stmt.all(limit) as DomainForRescan[];
+}
+
+/**
+ * Get a specific domain's latest scan info.
+ */
+export function getDomainLatestScan(
+  domain: string,
+  database?: Database.Database
+): DomainForRescan | null {
+  const dbInstance = database ?? getDb();
+
+  const stmt = dbInstance.prepare(`
+    SELECT
+      domain,
+      url,
+      scanned_at as lastScanAt,
+      id as lastScanId,
+      score as lastScore
+    FROM scans
+    WHERE domain = ?
+    ORDER BY scanned_at DESC
+    LIMIT 1
+  `);
+
+  const result = stmt.get(domain) as DomainForRescan | undefined;
+  return result ?? null;
+}
