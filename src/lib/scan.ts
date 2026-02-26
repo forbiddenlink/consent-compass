@@ -38,6 +38,13 @@ import {
   getGdprComplianceStatus,
   type ComplianceResult,
 } from "@/lib/compliance";
+import {
+  saveScreenshot,
+  annotateBanner,
+  cleanupScreenshots,
+  generateTimestamp,
+  type BannerBounds,
+} from "@/lib/screenshots";
 
 const SCANNER_VERSION = "0.10.0"; // Added Multi-Regulation Compliance Scoring (Phase 5.1)
 
@@ -86,6 +93,26 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
     await page.waitForTimeout(1250);
 
+    // =========================================================================
+    // SCREENSHOT STORAGE: Capture domain and timestamp for consistent naming
+    // =========================================================================
+    const domain = new URL(url).hostname;
+    const screenshotTimestamp = generateTimestamp();
+
+    // Capture pre-consent screenshot
+    const preConsentBuffer = await page.screenshot({ fullPage: true });
+    let preConsentScreenshotPath: string | undefined;
+    try {
+      preConsentScreenshotPath = await saveScreenshot(
+        preConsentBuffer,
+        domain,
+        "pre-consent",
+        screenshotTimestamp
+      );
+    } catch {
+      // Screenshot storage failure shouldn't break the scan
+    }
+
     const html = await page.content();
     const lower = html.toLowerCase();
 
@@ -104,10 +131,28 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     ];
 
     const matchedSelectors: string[] = [];
+    let bannerBounds: BannerBounds | undefined;
+
     for (const sel of selectorCandidates) {
       try {
-        const count = await page.locator(sel).count();
-        if (count > 0) matchedSelectors.push(sel);
+        const locator = page.locator(sel);
+        const count = await locator.count();
+        if (count > 0) {
+          matchedSelectors.push(sel);
+          // Capture bounds of first matched banner element for annotation
+          if (!bannerBounds) {
+            const firstEl = locator.first();
+            const box = await firstEl.boundingBox().catch(() => null);
+            if (box) {
+              bannerBounds = {
+                x: box.x,
+                y: box.y,
+                width: box.width,
+                height: box.height,
+              };
+            }
+          }
+        }
       } catch {
         // ignore invalid selectors
       }
@@ -416,6 +461,8 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         }
       | undefined;
 
+    let postConsentScreenshotPath: string | undefined;
+
     if (acceptButtons.length > 0) {
       try {
         // Find the first clickable accept button
@@ -439,6 +486,19 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         if (clicked) {
           // Wait for cookies to be set after consent
           await page.waitForTimeout(2000);
+
+          // Capture post-consent screenshot
+          try {
+            const postConsentBuffer = await page.screenshot({ fullPage: true });
+            postConsentScreenshotPath = await saveScreenshot(
+              postConsentBuffer,
+              domain,
+              "post-consent",
+              screenshotTimestamp
+            );
+          } catch {
+            // Screenshot storage failure shouldn't break the scan
+          }
 
           // Capture post-consent cookies
           const postConsentCookiesRaw = await context.cookies();
@@ -688,10 +748,36 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     const complianceFindings = generateComplianceFindings(complianceResult);
     findings.push(...complianceFindings);
 
-    // Artifact
+    // =========================================================================
+    // SCREENSHOT ARTIFACTS: Create banner-highlighted screenshot and store paths
+    // =========================================================================
+    // Legacy artifact: Keep /tmp screenshot for backward compatibility
     const safeHost = new URL(url).hostname.replace(/[^a-z0-9.-]/gi, "_");
     const screenshotPath = `/tmp/consent-compass-${safeHost}-${Date.now()}.png`;
     await page.screenshot({ path: screenshotPath, fullPage: true });
+
+    // Create banner-highlighted screenshot if banner was detected
+    let bannerHighlightScreenshotPath: string | undefined;
+    if (bannerDetected && bannerBounds && preConsentBuffer) {
+      try {
+        const annotatedBuffer = await annotateBanner(preConsentBuffer, bannerBounds);
+        bannerHighlightScreenshotPath = await saveScreenshot(
+          annotatedBuffer,
+          domain,
+          "banner",
+          screenshotTimestamp
+        );
+      } catch {
+        // Annotation failure shouldn't break the scan
+      }
+    }
+
+    // Clean up old screenshots (keep last 10 sets per domain)
+    try {
+      await cleanupScreenshots(domain, 10);
+    } catch {
+      // Cleanup failure is non-critical
+    }
 
     const baseScore = scoreFromFindings(findings);
 
@@ -796,7 +882,12 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         detected: gpcResult.detected,
         honored: gpcResult.honored,
       },
-      artifacts: { screenshotPath },
+      artifacts: {
+        screenshotPath, // Legacy /tmp path for backward compatibility
+        preConsentScreenshot: preConsentScreenshotPath,
+        postConsentScreenshot: postConsentScreenshotPath,
+        bannerHighlightScreenshot: bannerHighlightScreenshotPath,
+      },
       findings,
       meta: {
         userAgent: UA,

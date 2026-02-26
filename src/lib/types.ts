@@ -213,6 +213,10 @@ export type ScanResult = {
   artifacts: {
     screenshotPath?: string;
     bannerScreenshotPath?: string;
+    // New persistent screenshot paths (Phase 4.4)
+    preConsentScreenshot?: string; // Relative path from public/screenshots/
+    postConsentScreenshot?: string; // Relative path from public/screenshots/
+    bannerHighlightScreenshot?: string; // Relative path from public/screenshots/
   };
 
   findings: ConsentFinding[];

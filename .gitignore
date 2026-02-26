@@ -39,6 +39,9 @@ yarn-error.log*
 # database
 /data/
 
+# user screenshots (persistent storage)
+/public/screenshots/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

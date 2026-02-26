@@ -96,9 +96,9 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [ ] Weekly automated re-scans
 
 ### 4.4 Screenshot Storage
-- [ ] Move from /tmp to persistent storage
-- [ ] Generate annotated screenshots (highlight banner)
-- [ ] Store before/after consent screenshots
+- [x] Move from /tmp to persistent storage
+- [x] Generate annotated screenshots (highlight banner)
+- [x] Store before/after consent screenshots
 
 ---
 
