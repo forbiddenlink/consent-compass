@@ -6,9 +6,11 @@ import {
   clamp,
   scoreFromFindings,
   classifyButtonText,
+  compareCookies,
+  generatePostConsentFindings,
 } from "@/lib/heuristics";
 
-const SCANNER_VERSION = "0.2.0";
+const SCANNER_VERSION = "0.3.0"; // Bumped for post-consent comparison
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -211,6 +213,93 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       }
     }
 
+    // =========================================================================
+    // POST-CONSENT COMPARISON: Click accept and capture delta
+    // =========================================================================
+    let postConsentData:
+      | {
+          cookies: CategorizedCookie[];
+          cookiesByCategory: ReturnType<typeof summarizeCookiesByCategory>;
+          newCookies: CategorizedCookie[];
+          persistedCookies: CategorizedCookie[];
+          acceptClicked: boolean;
+          clickError?: string;
+        }
+      | undefined;
+
+    if (acceptButtons.length > 0) {
+      try {
+        // Find the first clickable accept button
+        const clickable = page.locator("button, [role='button'], a");
+        const clickableCount = await clickable.count();
+        let clicked = false;
+
+        for (let i = 0; i < Math.min(clickableCount, 220) && !clicked; i++) {
+          const el = clickable.nth(i);
+          const text = (await el.innerText().catch(() => "")).trim();
+          if (classifyButtonText(text) === "accept") {
+            // Check if element is visible and clickable
+            const isVisible = await el.isVisible().catch(() => false);
+            if (isVisible) {
+              await el.click({ timeout: 5000 });
+              clicked = true;
+            }
+          }
+        }
+
+        if (clicked) {
+          // Wait for cookies to be set after consent
+          await page.waitForTimeout(2000);
+
+          // Capture post-consent cookies
+          const postConsentCookiesRaw = await context.cookies();
+          const postConsentCookies: CategorizedCookie[] = categorizeCookies(
+            postConsentCookiesRaw.map((c) => ({
+              name: c.name,
+              domain: c.domain,
+              path: c.path,
+              value: c.value?.slice(0, 100),
+              expires: c.expires > 0 ? new Date(c.expires * 1000).toISOString() : undefined,
+            }))
+          ).slice(0, 80);
+
+          // Compare pre vs post consent
+          const comparison = compareCookies(preConsentCookies, postConsentCookies);
+          const postCookiesByCategory = summarizeCookiesByCategory(postConsentCookies);
+
+          postConsentData = {
+            cookies: postConsentCookies,
+            cookiesByCategory: postCookiesByCategory,
+            newCookies: comparison.newCookies,
+            persistedCookies: comparison.persistedCookies,
+            acceptClicked: true,
+          };
+
+          // Generate violation findings from comparison
+          const postConsentFindings = generatePostConsentFindings(comparison);
+          findings.push(...postConsentFindings);
+        } else {
+          postConsentData = {
+            cookies: [],
+            cookiesByCategory: { necessary: 0, functional: 0, analytics: 0, marketing: 0, unknown: 0 },
+            newCookies: [],
+            persistedCookies: [],
+            acceptClicked: false,
+            clickError: "Could not find visible accept button to click",
+          };
+        }
+      } catch (err) {
+        postConsentData = {
+          cookies: [],
+          cookiesByCategory: { necessary: 0, functional: 0, analytics: 0, marketing: 0, unknown: 0 },
+          newCookies: [],
+          persistedCookies: [],
+          acceptClicked: false,
+          clickError: err instanceof Error ? err.message : "Unknown error clicking accept",
+        };
+      }
+    }
+
     // Check for Google Consent Mode v2
     const googleConsentMode = await page.evaluate(() => {
       const result: {
@@ -347,6 +436,7 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         cookiesByCategory,
         trackerCount: preConsentRequests.filter((r) => r.isTracker).length,
       },
+      postConsent: postConsentData,
       googleConsentMode: googleConsentMode.detected ? googleConsentMode : undefined,
       artifacts: { screenshotPath },
       findings,

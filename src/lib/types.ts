@@ -113,6 +113,20 @@ export type ScanResult = {
     trackerCount?: number;
   };
 
+  // Post-consent comparison
+  postConsent?: {
+    cookies: CategorizedCookie[];
+    cookiesByCategory?: Record<CookieCategory, number>;
+    // Cookies that appeared after consent (expected behavior)
+    newCookies: CategorizedCookie[];
+    // Cookies that were present before AND after (potential violation if tracking)
+    persistedCookies: CategorizedCookie[];
+    // Did we successfully click accept?
+    acceptClicked: boolean;
+    // Error if click failed
+    clickError?: string;
+  };
+
   // New: Google Consent Mode analysis
   googleConsentMode?: GoogleConsentMode;
 

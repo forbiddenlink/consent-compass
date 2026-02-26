@@ -363,3 +363,122 @@ export function generateGCMFindings(gcm: {
 
   return findings;
 }
+
+// ============================================================================
+// Post-Consent Cookie Comparison
+// ============================================================================
+
+export type CookieComparisonResult = {
+  /** Cookies that appeared after consent (expected behavior) */
+  newCookies: CategorizedCookie[];
+  /** Cookies present before AND after consent */
+  persistedCookies: CategorizedCookie[];
+  /** Tracking cookies that existed before consent - VIOLATION */
+  preConsentViolations: CategorizedCookie[];
+};
+
+/**
+ * Create a unique key for a cookie (name + domain).
+ */
+function cookieKey(cookie: { name: string; domain?: string }): string {
+  return `${cookie.name}@${cookie.domain || ""}`;
+}
+
+/**
+ * Compare pre-consent and post-consent cookies to identify violations.
+ */
+export function compareCookies(
+  preCookies: CategorizedCookie[],
+  postCookies: CategorizedCookie[]
+): CookieComparisonResult {
+  const preSet = new Set(preCookies.map(cookieKey));
+
+  const newCookies: CategorizedCookie[] = [];
+  const persistedCookies: CategorizedCookie[] = [];
+
+  for (const cookie of postCookies) {
+    const key = cookieKey(cookie);
+    if (preSet.has(key)) {
+      persistedCookies.push(cookie);
+    } else {
+      newCookies.push(cookie);
+    }
+  }
+
+  // Violations: tracking cookies (analytics/marketing) that existed BEFORE consent
+  const preConsentViolations = preCookies.filter(
+    (c) => c.category === "analytics" || c.category === "marketing"
+  );
+
+  return { newCookies, persistedCookies, preConsentViolations };
+}
+
+/**
+ * Generate findings from post-consent comparison.
+ */
+export function generatePostConsentFindings(comparison: CookieComparisonResult): ConsentFinding[] {
+  const findings: ConsentFinding[] = [];
+
+  // Critical: tracking cookies existed before consent
+  if (comparison.preConsentViolations.length > 0) {
+    const marketingViolations = comparison.preConsentViolations.filter(
+      (c) => c.category === "marketing"
+    );
+    const analyticsViolations = comparison.preConsentViolations.filter(
+      (c) => c.category === "analytics"
+    );
+
+    if (marketingViolations.length > 0) {
+      const names = marketingViolations.slice(0, 5).map((c) => {
+        const vendor = c.vendor ? ` (${c.vendor})` : "";
+        return `${c.name}${vendor}`;
+      });
+      findings.push({
+        id: "postconsent.violation.marketing",
+        title: `${marketingViolations.length} marketing cookie(s) set before consent`,
+        severity: "fail",
+        category: "pre-consent",
+        detail:
+          "Marketing/advertising cookies were present before the user gave consent. " +
+          "This is a GDPR violation - these cookies should only be set AFTER the user clicks accept.",
+        evidence: { kind: "cookie", value: names.join(", ") },
+      });
+    }
+
+    if (analyticsViolations.length > 0) {
+      const names = analyticsViolations.slice(0, 5).map((c) => {
+        const vendor = c.vendor ? ` (${c.vendor})` : "";
+        return `${c.name}${vendor}`;
+      });
+      findings.push({
+        id: "postconsent.violation.analytics",
+        title: `${analyticsViolations.length} analytics cookie(s) set before consent`,
+        severity: "warn",
+        category: "pre-consent",
+        detail:
+          "Analytics cookies were present before the user gave consent. " +
+          "Under strict GDPR interpretation, analytics cookies require consent before being set.",
+        evidence: { kind: "cookie", value: names.join(", ") },
+      });
+    }
+  }
+
+  // Info: new cookies appeared after consent (expected)
+  if (comparison.newCookies.length > 0) {
+    const trackingNew = comparison.newCookies.filter(
+      (c) => c.category === "analytics" || c.category === "marketing"
+    );
+    if (trackingNew.length > 0) {
+      findings.push({
+        id: "postconsent.new_tracking",
+        title: `${trackingNew.length} tracking cookie(s) set after consent (correct behavior)`,
+        severity: "info",
+        category: "pre-consent",
+        detail:
+          "Tracking cookies were set only after the user consented. This is the expected GDPR-compliant behavior.",
+      });
+    }
+  }
+
+  return findings;
+}

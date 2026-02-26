@@ -16,6 +16,8 @@ import {
   generateBannerFindings,
   generateCookieFindings,
   generateGCMFindings,
+  compareCookies,
+  generatePostConsentFindings,
 } from "./heuristics";
 import type { ConsentFinding, CategorizedCookie } from "./types";
 
@@ -816,5 +818,185 @@ describe("constants", () => {
     expect(BANNER_SELECTORS).toContain("#onetrust-banner-sdk");
     expect(BANNER_SELECTORS).toContain("#cookie-banner");
     expect(BANNER_SELECTORS).toContain("[id*='cookie']");
+  });
+});
+
+// ============================================================================
+// Test: compareCookies()
+// ============================================================================
+
+describe("compareCookies", () => {
+  it("returns empty arrays when both lists are empty", () => {
+    const result = compareCookies([], []);
+    expect(result.newCookies).toEqual([]);
+    expect(result.persistedCookies).toEqual([]);
+    expect(result.preConsentViolations).toEqual([]);
+  });
+
+  it("identifies new cookies that appeared after consent", () => {
+    const preCookies: CategorizedCookie[] = [
+      { name: "session", category: "necessary" },
+    ];
+    const postCookies: CategorizedCookie[] = [
+      { name: "session", category: "necessary" },
+      { name: "_ga", category: "analytics" },
+      { name: "_fbp", category: "marketing" },
+    ];
+    const result = compareCookies(preCookies, postCookies);
+    expect(result.newCookies).toHaveLength(2);
+    expect(result.newCookies.map((c) => c.name)).toContain("_ga");
+    expect(result.newCookies.map((c) => c.name)).toContain("_fbp");
+  });
+
+  it("identifies persisted cookies present before and after", () => {
+    const preCookies: CategorizedCookie[] = [
+      { name: "session", category: "necessary" },
+      { name: "_ga", category: "analytics" },
+    ];
+    const postCookies: CategorizedCookie[] = [
+      { name: "session", category: "necessary" },
+      { name: "_ga", category: "analytics" },
+      { name: "_fbp", category: "marketing" },
+    ];
+    const result = compareCookies(preCookies, postCookies);
+    expect(result.persistedCookies).toHaveLength(2);
+    expect(result.persistedCookies.map((c) => c.name)).toContain("session");
+    expect(result.persistedCookies.map((c) => c.name)).toContain("_ga");
+  });
+
+  it("identifies pre-consent violations (tracking cookies before consent)", () => {
+    const preCookies: CategorizedCookie[] = [
+      { name: "session", category: "necessary" },
+      { name: "_ga", category: "analytics" },
+      { name: "_fbp", category: "marketing" },
+    ];
+    const postCookies: CategorizedCookie[] = preCookies;
+    const result = compareCookies(preCookies, postCookies);
+    expect(result.preConsentViolations).toHaveLength(2);
+    expect(result.preConsentViolations.map((c) => c.name)).toContain("_ga");
+    expect(result.preConsentViolations.map((c) => c.name)).toContain("_fbp");
+  });
+
+  it("does not flag necessary/functional cookies as violations", () => {
+    const preCookies: CategorizedCookie[] = [
+      { name: "session", category: "necessary" },
+      { name: "language", category: "functional" },
+    ];
+    const postCookies: CategorizedCookie[] = preCookies;
+    const result = compareCookies(preCookies, postCookies);
+    expect(result.preConsentViolations).toHaveLength(0);
+  });
+
+  it("handles cookies with same name but different domain", () => {
+    const preCookies: CategorizedCookie[] = [
+      { name: "_ga", domain: ".example.com", category: "analytics" },
+    ];
+    const postCookies: CategorizedCookie[] = [
+      { name: "_ga", domain: ".example.com", category: "analytics" },
+      { name: "_ga", domain: ".other.com", category: "analytics" },
+    ];
+    const result = compareCookies(preCookies, postCookies);
+    expect(result.newCookies).toHaveLength(1);
+    expect(result.newCookies[0].domain).toBe(".other.com");
+    expect(result.persistedCookies).toHaveLength(1);
+    expect(result.persistedCookies[0].domain).toBe(".example.com");
+  });
+});
+
+// ============================================================================
+// Test: generatePostConsentFindings()
+// ============================================================================
+
+describe("generatePostConsentFindings", () => {
+  it("returns empty array when no violations", () => {
+    const result = generatePostConsentFindings({
+      newCookies: [],
+      persistedCookies: [],
+      preConsentViolations: [],
+    });
+    expect(result).toEqual([]);
+  });
+
+  it("generates fail finding for marketing violations", () => {
+    const findings = generatePostConsentFindings({
+      newCookies: [],
+      persistedCookies: [],
+      preConsentViolations: [
+        { name: "_fbp", category: "marketing", vendor: "Facebook" },
+      ],
+    });
+    expect(findings).toHaveLength(1);
+    expect(findings[0].id).toBe("postconsent.violation.marketing");
+    expect(findings[0].severity).toBe("fail");
+    expect(findings[0].evidence?.value).toContain("_fbp");
+    expect(findings[0].evidence?.value).toContain("Facebook");
+  });
+
+  it("generates warn finding for analytics violations", () => {
+    const findings = generatePostConsentFindings({
+      newCookies: [],
+      persistedCookies: [],
+      preConsentViolations: [
+        { name: "_ga", category: "analytics", vendor: "Google Analytics" },
+      ],
+    });
+    expect(findings).toHaveLength(1);
+    expect(findings[0].id).toBe("postconsent.violation.analytics");
+    expect(findings[0].severity).toBe("warn");
+  });
+
+  it("generates separate findings for marketing and analytics violations", () => {
+    const findings = generatePostConsentFindings({
+      newCookies: [],
+      persistedCookies: [],
+      preConsentViolations: [
+        { name: "_fbp", category: "marketing" },
+        { name: "_ga", category: "analytics" },
+      ],
+    });
+    expect(findings).toHaveLength(2);
+    const marketing = findings.find((f) => f.id === "postconsent.violation.marketing");
+    const analytics = findings.find((f) => f.id === "postconsent.violation.analytics");
+    expect(marketing).toBeDefined();
+    expect(analytics).toBeDefined();
+  });
+
+  it("generates info finding for correctly-placed tracking cookies", () => {
+    const findings = generatePostConsentFindings({
+      newCookies: [
+        { name: "_ga", category: "analytics" },
+        { name: "_fbp", category: "marketing" },
+      ],
+      persistedCookies: [],
+      preConsentViolations: [],
+    });
+    expect(findings).toHaveLength(1);
+    expect(findings[0].id).toBe("postconsent.new_tracking");
+    expect(findings[0].severity).toBe("info");
+    expect(findings[0].title).toContain("2 tracking cookie(s)");
+  });
+
+  it("does not generate info finding for non-tracking new cookies", () => {
+    const findings = generatePostConsentFindings({
+      newCookies: [
+        { name: "preference", category: "functional" },
+      ],
+      persistedCookies: [],
+      preConsentViolations: [],
+    });
+    expect(findings).toHaveLength(0);
+  });
+
+  it("limits evidence to 5 cookies", () => {
+    const violations = Array(10)
+      .fill(null)
+      .map((_, i) => ({ name: `_fbp_${i}`, category: "marketing" as const }));
+    const findings = generatePostConsentFindings({
+      newCookies: [],
+      persistedCookies: [],
+      preConsentViolations: violations,
+    });
+    const marketing = findings.find((f) => f.id === "postconsent.violation.marketing");
+    expect(marketing!.evidence?.value.split(", ")).toHaveLength(5);
   });
 });

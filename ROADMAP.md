@@ -40,10 +40,10 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [ ] Integrate Open Cookie Database (10,000+ cookies)
 
 ### 2.2 Post-Consent Comparison
-- [ ] Click accept button after initial scan
-- [ ] Capture cookies/requests after consent
-- [ ] Diff pre vs post consent state
-- [ ] Flag violations: cookies that existed before consent
+- [x] Click accept button after initial scan
+- [x] Capture cookies/requests after consent
+- [x] Diff pre vs post consent state
+- [x] Flag violations: cookies that existed before consent
 
 ### 2.3 Google Consent Mode v2
 - [x] Detect dataLayer consent signals
