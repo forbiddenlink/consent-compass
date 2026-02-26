@@ -1,9 +1,14 @@
 import type { CookieCategory, CategorizedCookie } from "./types";
+import { COOKIE_EXACT_MATCHES, COOKIE_PREFIX_PATTERNS } from "./cookie-database";
 
 /**
  * Cookie categorization database
  *
- * Based on Open Cookie Database patterns and common cookie naming conventions.
+ * Primary source: Open Cookie Database (2,249 cookies)
+ * https://github.com/jkwakman/Open-Cookie-Database
+ *
+ * Fallback: Local regex patterns for common patterns not in OCD
+ *
  * Categories:
  * - necessary: Essential for site functionality (auth, security, load balancing)
  * - functional: Enhanced functionality (language, preferences, A/B testing)
@@ -18,8 +23,8 @@ interface CookiePattern {
   description?: string;
 }
 
-// Known cookie patterns - exact matches and regex patterns
-const COOKIE_DATABASE: CookiePattern[] = [
+// Fallback patterns for cookies not in Open Cookie Database
+const FALLBACK_PATTERNS: CookiePattern[] = [
   // ===== NECESSARY =====
   // Session & Security
   { pattern: /^__cf/, category: "necessary", vendor: "Cloudflare", description: "Cloudflare security" },
@@ -190,14 +195,20 @@ const COOKIE_DATABASE: CookiePattern[] = [
 
 /**
  * Categorize a single cookie
+ *
+ * Lookup order:
+ * 1. Local regex patterns (critical categories: necessary, security, consent)
+ * 2. Open Cookie Database exact matches
+ * 3. Open Cookie Database prefix patterns
+ * 4. Domain-based heuristics
  */
 export function categorizeCookie(name: string, domain?: string): {
   category: CookieCategory;
   vendor?: string;
   description?: string;
 } {
-  // Check against database patterns
-  for (const entry of COOKIE_DATABASE) {
+  // 1. Check local patterns first (we know these better than OCD for critical categories)
+  for (const entry of FALLBACK_PATTERNS) {
     const pattern = entry.pattern;
     const matches = typeof pattern === "string"
       ? name === pattern
@@ -212,7 +223,24 @@ export function categorizeCookie(name: string, domain?: string): {
     }
   }
 
-  // Domain-based heuristics for unknown cookies
+  // 2. Check Open Cookie Database exact matches
+  const exactMatch = COOKIE_EXACT_MATCHES.get(name);
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  // 3. Check Open Cookie Database prefix patterns (sorted by length, longest first)
+  for (const entry of COOKIE_PREFIX_PATTERNS) {
+    if (name.startsWith(entry.prefix)) {
+      return {
+        category: entry.category,
+        vendor: entry.vendor,
+        description: entry.description,
+      };
+    }
+  }
+
+  // 4. Domain-based heuristics for unknown cookies
   if (domain) {
     const lowerDomain = domain.toLowerCase();
 
