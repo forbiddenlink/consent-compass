@@ -12,7 +12,7 @@ const PRIVATE_IP_PATTERNS = [
   /^0\./,                            // "This" network
   /^fc00:/i,                         // IPv6 ULA
   /^fe80:/i,                         // IPv6 link-local
-  /^::1$/,                           // IPv6 localhost
+  /^\[?::1\]?$/,                      // IPv6 localhost (with or without brackets)
 ];
 
 const BLOCKED_HOSTNAMES = [
@@ -55,6 +55,11 @@ export function validateAndNormalizeUrl(input: string): {
   let url: URL;
 
   try {
+    // Check for non-http(s) protocols first and reject them
+    if (input.match(/^[a-z][a-z0-9+.-]*:/i) && !input.match(/^https?:\/\//i)) {
+      return { valid: false, error: "Only HTTP and HTTPS URLs are allowed" };
+    }
+
     // Add https:// if no protocol specified
     const withProtocol = input.match(/^https?:\/\//i) ? input : `https://${input}`;
     url = new URL(withProtocol);
@@ -62,7 +67,7 @@ export function validateAndNormalizeUrl(input: string): {
     return { valid: false, error: "Invalid URL format" };
   }
 
-  // Only allow http/https
+  // Only allow http/https (double-check after parsing)
   if (!["http:", "https:"].includes(url.protocol)) {
     return { valid: false, error: "Only HTTP and HTTPS URLs are allowed" };
   }
