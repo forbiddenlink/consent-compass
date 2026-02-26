@@ -116,10 +116,10 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [x] Report GPC compliance status
 
 ### 5.3 Accessibility Audit
-- [ ] Banner ARIA labels check
-- [ ] Keyboard navigation test
-- [ ] Screen reader compatibility
-- [ ] Focus trap detection
+- [x] Banner ARIA labels check
+- [x] Keyboard navigation test
+- [x] Screen reader compatibility
+- [x] Focus trap detection
 
 ---
 

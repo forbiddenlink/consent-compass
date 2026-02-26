@@ -27,8 +27,13 @@ import {
   analyzeGpc,
   generateGpcFindings,
 } from "@/lib/gpc";
+import {
+  auditAccessibility,
+  generateAccessibilityFindings,
+  type AccessibilityResult,
+} from "@/lib/accessibility";
 
-const SCANNER_VERSION = "0.8.0"; // Added Global Privacy Control (GPC) detection (Phase 5.2)
+const SCANNER_VERSION = "0.9.0"; // Added Accessibility Audit (Phase 5.3)
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -601,6 +606,30 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     const gpcFindings = generateGpcFindings(gpcResult);
     findings.push(...gpcFindings);
 
+    // =========================================================================
+    // ACCESSIBILITY AUDIT (Phase 5.3)
+    // =========================================================================
+    let accessibilityResult: AccessibilityResult | undefined;
+    if (bannerDetected && matchedSelectors.length > 0) {
+      try {
+        // Use the first matched selector for accessibility audit
+        accessibilityResult = await auditAccessibility(page, matchedSelectors[0]);
+
+        // Add accessibility findings
+        const a11yFindings = generateAccessibilityFindings(accessibilityResult);
+        findings.push(...a11yFindings);
+      } catch (err) {
+        // Log error but don't fail the scan
+        findings.push({
+          id: "a11y.audit.error",
+          title: "Accessibility audit failed",
+          severity: "info",
+          category: "accessibility",
+          detail: `Could not complete accessibility audit: ${err instanceof Error ? err.message : "Unknown error"}`,
+        });
+      }
+    }
+
     // Artifact
     const safeHost = new URL(url).hostname.replace(/[^a-z0-9.-]/gi, "_");
     const screenshotPath = `/tmp/consent-compass-${safeHost}-${Date.now()}.png`;
@@ -642,6 +671,7 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         contrastDifference: visualAnalysis.contrastDifference,
         issues: visualAnalysis.issues,
       } : undefined,
+      accessibility: accessibilityResult,
       friction: {
         acceptClicks,
         rejectClicks,

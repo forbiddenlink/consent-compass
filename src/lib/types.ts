@@ -149,6 +149,29 @@ export type ScanResult = {
     issues: string[];
   };
 
+  // Accessibility audit results (Phase 5.3)
+  accessibility?: {
+    score: number; // 0-100
+    ariaLabels: {
+      bannerHasRole: boolean;
+      bannerHasLabel: boolean;
+      buttonsLabeled: boolean;
+      issues: string[];
+    };
+    keyboard: {
+      focusable: boolean;
+      tabOrder: boolean;
+      escapeCloses: boolean;
+      enterActivates: boolean;
+      issues: string[];
+    };
+    focusTrap: {
+      detected: boolean;
+      properTrap: boolean;
+      issues: string[];
+    };
+  };
+
   artifacts: {
     screenshotPath?: string;
     bannerScreenshotPath?: string;
