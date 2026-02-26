@@ -23,8 +23,12 @@ import {
   generateRejectionFindings,
   type RejectionStep,
 } from "@/lib/rejection-flow";
+import {
+  analyzeGpc,
+  generateGpcFindings,
+} from "@/lib/gpc";
 
-const SCANNER_VERSION = "0.7.0"; // Added multi-layer CMP rejection flow measurement
+const SCANNER_VERSION = "0.8.0"; // Added Global Privacy Control (GPC) detection (Phase 5.2)
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -33,7 +37,14 @@ export async function scanUrl(url: string): Promise<ScanResult> {
   const started = Date.now();
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ userAgent: UA, viewport: { width: 1440, height: 900 } });
+  const context = await browser.newContext({
+    userAgent: UA,
+    viewport: { width: 1440, height: 900 },
+    // Send GPC signal to indicate user opt-out preference
+    extraHTTPHeaders: {
+      "Sec-GPC": "1",
+    },
+  });
   const page = await context.newPage();
 
   const preConsentRequests: TrackedRequest[] = [];
@@ -572,6 +583,24 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       }
     }
 
+    // =========================================================================
+    // GLOBAL PRIVACY CONTROL (GPC) DETECTION
+    // =========================================================================
+    const trackerCount = preConsentRequests.filter((r) => r.isTracker).length;
+    const gpcResult = await analyzeGpc(page, {
+      preConsentTrackerCount: trackerCount,
+      googleConsentMode: googleConsentMode.detected
+        ? {
+            detected: true,
+            signals: googleConsentMode.signals,
+          }
+        : { detected: false },
+    });
+
+    // Add GPC findings
+    const gpcFindings = generateGpcFindings(gpcResult);
+    findings.push(...gpcFindings);
+
     // Artifact
     const safeHost = new URL(url).hostname.replace(/[^a-z0-9.-]/gi, "_");
     const screenshotPath = `/tmp/consent-compass-${safeHost}-${Date.now()}.png`;
@@ -633,6 +662,10 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       },
       postConsent: postConsentData,
       googleConsentMode: googleConsentMode.detected ? googleConsentMode : undefined,
+      gpcSupport: {
+        detected: gpcResult.detected,
+        honored: gpcResult.honored,
+      },
       artifacts: { screenshotPath },
       findings,
       meta: {

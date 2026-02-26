@@ -111,9 +111,9 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [ ] Region-specific scoring
 
 ### 5.2 Global Privacy Control
-- [ ] Detect GPC signal support
-- [ ] Verify site honors Sec-GPC: 1 header
-- [ ] Report GPC compliance status
+- [x] Detect GPC signal support
+- [x] Verify site honors Sec-GPC: 1 header
+- [x] Report GPC compliance status
 
 ### 5.3 Accessibility Audit
 - [ ] Banner ARIA labels check
