@@ -18,8 +18,13 @@ import {
   calculateFrictionScore,
   generateFrictionFindings,
 } from "@/lib/friction";
+import {
+  measureRejectionFlow,
+  generateRejectionFindings,
+  type RejectionStep,
+} from "@/lib/rejection-flow";
 
-const SCANNER_VERSION = "0.6.0"; // Added friction scoring with cognitive pattern detection
+const SCANNER_VERSION = "0.7.0"; // Added multi-layer CMP rejection flow measurement
 
 const UA =
   "ConsentCompass/0.1 (Playwright; +https://example.local) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari";
@@ -90,6 +95,7 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     const rejectButtons: string[] = [];
     const managePrefsButtons: string[] = [];
     const buttonVisuals: ButtonVisualData[] = [];
+    let firstManageButtonLocator: ReturnType<typeof page.locator> | null = null;
 
     // Search visible-ish buttons/links by their text.
     const clickable = page.locator("button, [role='button'], a");
@@ -102,7 +108,14 @@ export async function scanUrl(url: string): Promise<ScanResult> {
       const classification = classifyButtonText(text);
       if (classification === "accept") acceptButtons.push(text.toLowerCase().slice(0, 80));
       if (classification === "reject") rejectButtons.push(text.toLowerCase().slice(0, 80));
-      if (classification === "manage") managePrefsButtons.push(text.toLowerCase().slice(0, 80));
+      if (classification === "manage") {
+        managePrefsButtons.push(text.toLowerCase().slice(0, 80));
+        // Store first visible manage button for rejection flow
+        if (!firstManageButtonLocator) {
+          const isVisible = await el.isVisible().catch(() => false);
+          if (isVisible) firstManageButtonLocator = el;
+        }
+      }
 
       // Capture visual data for accept and reject buttons (first of each type)
       if (
@@ -169,15 +182,52 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     const frictionNotes: string[] = [];
     let acceptClicks: number | undefined;
     let rejectClicks: number | undefined;
+    let rejectPath: RejectionStep[] = [];
 
-    // Click-friction is tricky (many CMPs are multi-step). For v0:
-    // - if we see a direct reject button, treat as 1 click
-    // - if reject missing but there is a "preferences/settings" button, treat as 2 clicks (open prefs + find reject)
+    // Click-friction measurement
     if (acceptButtons.length > 0) acceptClicks = 1;
-    if (rejectButtons.length > 0) rejectClicks = 1;
-    else if (managePrefsButtons.length > 0 && acceptButtons.length > 0) {
+
+    if (rejectButtons.length > 0) {
+      // Direct reject button on first layer
+      rejectClicks = 1;
+    } else if (managePrefsButtons.length > 0 && firstManageButtonLocator) {
+      // No direct reject - measure actual rejection flow through preference layers
+      try {
+        const flowResult = await measureRejectionFlow(page, firstManageButtonLocator);
+        rejectClicks = flowResult.totalClicks;
+        rejectPath = flowResult.path;
+
+        if (flowResult.success) {
+          frictionNotes.push(
+            `Rejection requires ${flowResult.totalClicks} clicks: ${flowResult.path.map((p) => p.target).join(" → ")}`
+          );
+        } else {
+          frictionNotes.push(
+            `Could not complete rejection flow: ${flowResult.error || "unknown error"}`
+          );
+        }
+
+        // Generate rejection-specific findings
+        const rejectionFindings = generateRejectionFindings(flowResult);
+        findings.push(...rejectionFindings);
+
+        // Re-navigate to original URL for post-consent comparison
+        // (rejection flow may have modified page state)
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
+        await page.waitForTimeout(1250);
+      } catch (err) {
+        // Fallback to estimate if rejection flow fails
+        rejectClicks = 2;
+        frictionNotes.push(
+          "No obvious 'Reject all' found; 'Preferences/Settings' present (likely 2+ step rejection)."
+        );
+      }
+    } else if (managePrefsButtons.length > 0) {
+      // Has manage button but couldn't get locator - fallback to estimate
       rejectClicks = 2;
-      frictionNotes.push("No obvious 'Reject all' found; 'Preferences/Settings' present (likely 2+ step rejection)." );
+      frictionNotes.push(
+        "No obvious 'Reject all' found; 'Preferences/Settings' present (likely 2+ step rejection)."
+      );
     }
 
     // =========================================================================
@@ -572,7 +622,7 @@ export async function scanUrl(url: string): Promise<ScanResult> {
         cognitivePatterns: cognitiveResult.patterns.map(p => p.type),
         asymmetryScore: visualAnalysis.asymmetryScore,
         acceptPath: [],
-        rejectPath: [],
+        rejectPath: rejectPath.map(step => `${step.action}: ${step.target}`),
         notes: frictionNotes,
       },
       preConsent: {

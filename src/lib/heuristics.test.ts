@@ -399,6 +399,36 @@ describe("classifyButtonText", () => {
     });
   });
 
+  describe("save buttons", () => {
+    it.each([
+      ["Save", "save"],
+      ["Save Preferences", "save"],
+      ["Save Settings", "save"],
+      ["Confirm", "save"],
+      ["Confirm Choices", "save"],
+      ["Save my choices", "save"],
+      ["SAVE", "save"],
+      ["CONFIRM", "save"],
+    ])('classifies "%s" as save', (text, expected) => {
+      expect(classifyButtonText(text)).toBe(expected);
+    });
+  });
+
+  describe("advanced buttons", () => {
+    it.each([
+      ["Advanced", "advanced"],
+      ["Show Purposes", "advanced"],
+      ["Show Details", "advanced"],
+      ["Vendor List", "advanced"],
+      ["Legitimate Interest", "advanced"],
+      ["Partners", "advanced"],
+      ["View Vendors", "advanced"],
+      ["ADVANCED", "advanced"],
+    ])('classifies "%s" as advanced', (text, expected) => {
+      expect(classifyButtonText(text)).toBe(expected);
+    });
+  });
+
   describe("unclassified", () => {
     it.each([
       ["Learn More", null],

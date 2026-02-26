@@ -38,6 +38,25 @@ export const MANAGE_HINTS = [
   "more options",
 ];
 
+export const SAVE_HINTS = [
+  "save",
+  "save preferences",
+  "save settings",
+  "confirm",
+  "confirm choices",
+  "save my choices",
+];
+
+export const ADVANCED_HINTS = [
+  "advanced",
+  "show purposes",
+  "show details",
+  "vendor list",
+  "legitimate interest",
+  "partners",
+  "view vendors",
+];
+
 export const BANNER_SELECTORS = [
   "#onetrust-banner-sdk",
   "#cookie-banner",
@@ -139,16 +158,22 @@ function matchesHint(text: string, hint: string): boolean {
   return text.includes(hint);
 }
 
+export type ButtonClassification = "accept" | "reject" | "manage" | "save" | "advanced" | null;
+
 /**
- * Classify button text into accept/reject/manage categories.
+ * Classify button text into accept/reject/manage/save/advanced categories.
  * Order matters: reject is checked before accept to handle "only necessary" correctly.
  */
-export function classifyButtonText(text: string): "accept" | "reject" | "manage" | null {
+export function classifyButtonText(text: string): ButtonClassification {
   const lower = text.toLowerCase().trim();
   if (!lower) return null;
 
   // Check reject first - "only necessary" should not match "accept" hints
   if (REJECT_HINTS.some((h) => matchesHint(lower, h))) return "reject";
+  // Check save before manage - "save preferences" should match save, not manage
+  if (SAVE_HINTS.some((h) => matchesHint(lower, h))) return "save";
+  // Check advanced before manage - "show purposes" is deeper navigation
+  if (ADVANCED_HINTS.some((h) => matchesHint(lower, h))) return "advanced";
   // Check manage before accept - "cookie preferences" should not match "ok" in cookie
   if (MANAGE_HINTS.some((h) => matchesHint(lower, h))) return "manage";
   if (ACCEPT_HINTS.some((h) => matchesHint(lower, h))) return "accept";

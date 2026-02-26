@@ -66,10 +66,10 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [x] Score visual prominence asymmetry
 
 ### 3.2 Multi-Layer CMP Detection
-- [ ] Actually click through preference layers
-- [ ] Track DOM changes between layers
-- [ ] Count real clicks needed to reject
-- [ ] Detect shadow DOM consent banners
+- [x] Actually click through preference layers
+- [x] Track DOM changes between layers
+- [x] Count real clicks needed to reject
+- [x] Detect shadow DOM consent banners
 
 ### 3.3 Friction Scoring
 - [x] Click asymmetry scoring (extra clicks to reject)
