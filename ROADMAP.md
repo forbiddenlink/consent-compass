@@ -130,7 +130,7 @@ Build the most accurate, developer-friendly consent compliance scanner — combi
 - [x] Set up Vitest test framework (304 tests)
 - [x] Set up CI/CD pipeline (GitHub Actions)
 - [x] Extract heuristics to testable module (heuristics.ts with 97.87% coverage)
-- [ ] Document API with OpenAPI spec
+- [x] Document API with OpenAPI spec
 
 ---
 

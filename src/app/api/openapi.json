@@ -1,0 +1,137 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Consent Compass API",
+    "description": "GDPR consent banner compliance scanner API",
+    "version": "0.7.0"
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Development" }
+  ],
+  "paths": {
+    "/api/scan": {
+      "post": {
+        "summary": "Scan a URL for consent compliance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "example": "https://example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scan completed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScanResult" }
+              }
+            }
+          },
+          "400": { "description": "Invalid URL" },
+          "429": { "description": "Rate limited" },
+          "500": { "description": "Scan failed" }
+        }
+      }
+    },
+    "/api/report": {
+      "get": {
+        "summary": "Generate exportable report",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uri" }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["pdf", "json", "csv"],
+              "default": "pdf"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report generated",
+            "content": {
+              "application/pdf": {},
+              "application/json": {},
+              "text/csv": {}
+            }
+          },
+          "400": { "description": "Invalid URL or format" },
+          "500": { "description": "Report generation failed" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ScanResult": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["ok", "error", "timeout"] },
+          "url": { "type": "string" },
+          "scannedAt": { "type": "string", "format": "date-time" },
+          "score": {
+            "type": "object",
+            "properties": {
+              "overall": { "type": "integer", "minimum": 0, "maximum": 100 },
+              "choiceSymmetry": { "type": "integer" },
+              "preConsentSignals": { "type": "integer" },
+              "accessibility": { "type": "integer" },
+              "transparency": { "type": "integer" }
+            }
+          },
+          "banner": {
+            "type": "object",
+            "properties": {
+              "detected": { "type": "boolean" },
+              "confidence": { "type": "number" },
+              "acceptButtons": { "type": "array", "items": { "type": "string" } },
+              "rejectButtons": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "friction": {
+            "type": "object",
+            "properties": {
+              "acceptClicks": { "type": "integer" },
+              "rejectClicks": { "type": "integer" },
+              "overallScore": { "type": "integer" },
+              "rejectPath": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "findings": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Finding" }
+          }
+        }
+      },
+      "Finding": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "severity": { "type": "string", "enum": ["info", "warn", "fail"] },
+          "detail": { "type": "string" },
+          "category": { "type": "string" }
+        }
+      }
+    }
+  }
+}
