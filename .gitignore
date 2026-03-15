@@ -45,3 +45,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.claude
+.claude/
+.playwright-mcp
+.playwright-mcp/
+.history
+.history/
+playwright-report
+playwright-report/
+__pycache__
+__pycache__/
+.codacy
+.codacy/
+coverage/
+test_run/
+supabase/.temp/
+dist/
