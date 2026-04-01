@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { scanUrl } from "@/lib/scan";
+import { scanUrl as triggerScanUrl } from "@/trigger/compliance-scan";
 import {
   ScanRequestSchema,
   validateAndNormalizeUrl,
@@ -46,7 +47,8 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         status: "error",
-        error: "Rate limit exceeded. Please wait before making another request.",
+        error:
+          "Rate limit exceeded. Please wait before making another request.",
         code: "RATE_LIMITED",
         retryAfter: rateLimit.retryAfter,
       },
@@ -56,7 +58,7 @@ export async function POST(req: Request) {
           ...rateLimitHeaders,
           "Retry-After": String(rateLimit.retryAfter),
         },
-      }
+      },
     );
   }
 
@@ -75,7 +77,7 @@ export async function POST(req: Request) {
           ...rateLimitHeaders,
           "Retry-After": "10",
         },
-      }
+      },
     );
   }
 
@@ -92,7 +94,7 @@ export async function POST(req: Request) {
           error: urlResult.error,
           code: "INVALID_URL",
         },
-        { status: 400, headers: rateLimitHeaders }
+        { status: 400, headers: rateLimitHeaders },
       );
     }
 
@@ -113,7 +115,7 @@ export async function POST(req: Request) {
             ...rateLimitHeaders,
             "Retry-After": String(domainLimit.retryAfter),
           },
-        }
+        },
       );
     }
 
@@ -132,6 +134,16 @@ export async function POST(req: Request) {
           // Log but don't fail the request if DB save fails
           console.error("[Scan DB Error]", dbError);
         }
+      }
+
+      // Trigger async background job (fire-and-forget)
+      if (result.status === "ok" && scanId !== undefined) {
+        triggerScanUrl
+          .trigger({ url: urlResult.url, reportId: String(scanId) })
+          .catch((err) => {
+            console.error("[Trigger Job Error]", err);
+            // Don't fail the response if trigger fails
+          });
       }
 
       // Add scanId to response if available
@@ -153,7 +165,7 @@ export async function POST(req: Request) {
             message: issue.message,
           })),
         },
-        { status: 400, headers: rateLimitHeaders }
+        { status: 400, headers: rateLimitHeaders },
       );
     }
 
@@ -164,7 +176,7 @@ export async function POST(req: Request) {
           error: err.message,
           code: "VALIDATION_ERROR",
         },
-        { status: 400, headers: rateLimitHeaders }
+        { status: 400, headers: rateLimitHeaders },
       );
     }
 
@@ -175,7 +187,7 @@ export async function POST(req: Request) {
           error: "Scan timed out. The target site may be slow or unresponsive.",
           code: "TIMEOUT",
         },
-        { status: 504, headers: rateLimitHeaders }
+        { status: 504, headers: rateLimitHeaders },
       );
     }
 
@@ -193,7 +205,7 @@ export async function POST(req: Request) {
             ...rateLimitHeaders,
             "Retry-After": String(err.retryAfter),
           },
-        }
+        },
       );
     }
 
@@ -207,7 +219,7 @@ export async function POST(req: Request) {
           error: "Could not resolve domain. Please check the URL.",
           code: "DNS_ERROR",
         },
-        { status: 400, headers: rateLimitHeaders }
+        { status: 400, headers: rateLimitHeaders },
       );
     }
 
@@ -218,7 +230,7 @@ export async function POST(req: Request) {
           error: "Connection refused by the target server.",
           code: "CONNECTION_REFUSED",
         },
-        { status: 502, headers: rateLimitHeaders }
+        { status: 502, headers: rateLimitHeaders },
       );
     }
 
@@ -229,7 +241,7 @@ export async function POST(req: Request) {
           error: "Scan timed out. The target site may be slow or unresponsive.",
           code: "TIMEOUT",
         },
-        { status: 504, headers: rateLimitHeaders }
+        { status: 504, headers: rateLimitHeaders },
       );
     }
 
@@ -241,7 +253,7 @@ export async function POST(req: Request) {
         error: "An unexpected error occurred during the scan.",
         code: "INTERNAL_ERROR",
       },
-      { status: 500, headers: rateLimitHeaders }
+      { status: 500, headers: rateLimitHeaders },
     );
   }
 }
