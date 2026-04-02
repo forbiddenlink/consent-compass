@@ -8,4 +8,3 @@ export async function register() {
   }
 }
 
-export { onRequestError } from "@sentry/nextjs";

@@ -1,4 +1,4 @@
-import "./src/env.js";
+import "./src/env.ts";
 import type { NextConfig } from "next";
 import { withAxiom } from 'next-axiom';
 
@@ -31,7 +31,6 @@ export default withSentryConfig(withAxiom(nextConfig), {
     project: process.env.SENTRY_PROJECT,
     silent: !process.env.CI,
     widenClientFileUpload: true,
-    hideSourceMaps: true,
     disableLogger: true,
     automaticVercelMonitors: true,
   });
