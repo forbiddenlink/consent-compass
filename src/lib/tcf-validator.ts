@@ -316,6 +316,7 @@ export function analyzeTCFInBrowser(): TCFValidationResult {
   try {
     // Check for __tcfapi (TCF v2.x)
     // biome-ignore lint/suspicious/noExplicitAny: Browser global
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const win = window as any;
 
     if (typeof win.__tcfapi === "function") {
