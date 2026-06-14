@@ -81,10 +81,11 @@
       "flatted": ">=3.4.2",
       "picomatch": ">=4.0.4",
       "cookie": ">=0.7.0",
-      "systeminformation": ">=5.31.0",
+      "systeminformation": "^5.31.6",
       "vite": ">=7.3.2",
       "next": ">=16.2.3",
-      "protobufjs": "^7.6.1"
+      "protobufjs": "^7.6.1",
+      "esbuild": "^0.28.1"
     }
   },
   "description": "URL-based consent scanning tool that generates evidence-first privacy compliance reports",
