@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://consent-compass.vercel.app
+
+# Sitemaps
+Sitemap: https://consent-compass.vercel.app/sitemap.xml
