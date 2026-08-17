@@ -90,7 +90,7 @@
       "postcss": ">=8.5.14",
       "@opentelemetry/core": ">=2.8.0 <3",
       "@trigger.dev/core": ">=4.5.6 <5",
-      "brace-expansion": ">=1.1.18 <2",
+      "brace-expansion": ">=5.0.9 <6",
       "dompurify": ">=3.4.13 <4",
       "engine.io": ">=6.6.7 <7",
       "js-yaml": ">=4.3.1 <5",
