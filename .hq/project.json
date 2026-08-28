@@ -1,0 +1,35 @@
+{
+	"allowedForCodex": true,
+	"automationLevel": "scheduled",
+	"confidentialContext": "none",
+	"context": "personal",
+	"hosting": ["vercel"],
+	"kind": "app",
+	"lastReviewedAt": "2026-08-27",
+	"lifecycle": "prototype",
+	"observability": ["posthog", "sentry"],
+	"ownerContext": "personal",
+	"surface": "product",
+	"systems": ["solo-control-tower", "legal-policy"],
+	"tags": [
+		"biome",
+		"consent",
+		"eslint",
+		"langfuse",
+		"next",
+		"openai",
+		"playwright",
+		"posthog",
+		"react",
+		"resend",
+		"sentry",
+		"tailwind",
+		"trigger",
+		"vercel",
+		"vitest"
+	],
+	"urls": {
+		"repository": "https://github.com/forbiddenlink/consent-compass"
+	},
+	"notes": "Consent/legal-policy product candidate for feeding hq legal-policy and launch-readiness checks."
+}
