@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/forbiddenlink/consent-compass/compare/v1.0.2...v1.0.3) (2026-08-29)
+
+
+### Bug Fixes
+
+* **deps:** move resolution overrides to package.json and add missing patches ([#57](https://github.com/forbiddenlink/consent-compass/issues/57)) ([783786a](https://github.com/forbiddenlink/consent-compass/commit/783786a0f34abe9ae3aadf6840b3dddd2f1a86de))
+
 ## [1.0.2](https://github.com/forbiddenlink/consent-compass/compare/v1.0.1...v1.0.2) (2026-08-29)
 
 
