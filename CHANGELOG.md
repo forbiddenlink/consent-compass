@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/forbiddenlink/consent-compass/compare/v1.0.1...v1.0.2) (2026-08-29)
+
+
+### Bug Fixes
+
+* **deps:** bump next to 16.3.3 for AVIF image RCE ([#55](https://github.com/forbiddenlink/consent-compass/issues/55)) ([311bcdf](https://github.com/forbiddenlink/consent-compass/commit/311bcdf70fddcaa05c25e2ea1ae2b2d3b3640ab9))
+
 ## [1.0.1](https://github.com/forbiddenlink/consent-compass/compare/v1.0.0...v1.0.1) (2026-08-29)
 
 
