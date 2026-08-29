@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/forbiddenlink/consent-compass/compare/v1.0.0...v1.0.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* harden workflow supply chain ([e6413ee](https://github.com/forbiddenlink/consent-compass/commit/e6413eeb9e54dba3c0ae35566bc47b2cc92a20f5))
+
 ## 1.0.0 (2026-08-16)
 
 
