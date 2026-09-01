@@ -2,8 +2,11 @@ import { defineConfig } from "@trigger.dev/sdk/v3";
 
 export default defineConfig({
   project:
-    process.env.TRIGGER_PROJECT_REF || "proj_REPLACE_WITH_YOUR_PROJECT_ID",
-  runtime: "node",
+    process.env.TRIGGER_PROJECT_REF ??
+    (() => {
+      throw new Error("TRIGGER_PROJECT_REF is not set");
+    })(),
+  runtime: "node-24",
   logLevel: "log",
   maxDuration: 300,
   retries: {
