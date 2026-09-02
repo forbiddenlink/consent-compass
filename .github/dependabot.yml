@@ -18,6 +18,13 @@ updates:
       major-updates:
         patterns: ["*"]
         update-types: ["major"]
+    ignore:
+      # eslint-plugin-react 7.37.5 is the latest release and peers eslint
+      # "^3 || ... || ^9.7". Under ESLint 10 its react/display-name rule throws
+      # `contextOrFilename.getFilename is not a function` and every lint run
+      # dies. Drop this once the plugin ships ESLint 10 support.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
     labels: ["dependencies"]
     commit-message:
       prefix: "chore(deps):"
