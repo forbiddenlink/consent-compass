@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/forbiddenlink/consent-compass/compare/v1.0.3...v1.0.4) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** let pnpm/action-setup read the version from packageManager ([6feb1f1](https://github.com/forbiddenlink/consent-compass/commit/6feb1f1375964d74b5fd5fe32b819cbf7734f2f8))
+
 ## [1.0.3](https://github.com/forbiddenlink/consent-compass/compare/v1.0.2...v1.0.3) (2026-08-29)
 
 
