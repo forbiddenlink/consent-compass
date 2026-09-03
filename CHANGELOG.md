@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/forbiddenlink/consent-compass/compare/v1.0.4...v1.0.5) (2026-09-03)
+
+
+### Bug Fixes
+
+* renovate config drift ([ee8b35f](https://github.com/forbiddenlink/consent-compass/commit/ee8b35ff7e1613c26f1947c0abc5ee6544907d6a))
+
 ## [1.0.4](https://github.com/forbiddenlink/consent-compass/compare/v1.0.3...v1.0.4) (2026-09-02)
 
 
