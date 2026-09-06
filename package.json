@@ -2,7 +2,7 @@
   "name": "consent-compass",
   "version": "1.0.5",
   "private": true,
-  "packageManager": "pnpm@10.18.0",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
