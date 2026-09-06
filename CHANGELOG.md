@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/forbiddenlink/consent-compass/compare/v1.0.5...v1.0.6) (2026-09-06)
+
+
+### Bug Fixes
+
+* **security:** pin transitive dependencies off their open advisories ([#67](https://github.com/forbiddenlink/consent-compass/issues/67)) ([ddef0d1](https://github.com/forbiddenlink/consent-compass/commit/ddef0d1862f624f4a6210404e8e8e51cfd9dfba8))
+
 ## [1.0.5](https://github.com/forbiddenlink/consent-compass/compare/v1.0.4...v1.0.5) (2026-09-03)
 
 
