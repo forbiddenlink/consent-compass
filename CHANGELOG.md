@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/forbiddenlink/consent-compass/compare/v1.0.6...v1.0.7) (2026-09-10)
+
+
+### Bug Fixes
+
+* **security:** raise the js-yaml override floor past its own advisory ([#75](https://github.com/forbiddenlink/consent-compass/issues/75)) ([31e6096](https://github.com/forbiddenlink/consent-compass/commit/31e6096d06a2258f90146bd9f042b89d6fa71f42))
+
 ## [1.0.6](https://github.com/forbiddenlink/consent-compass/compare/v1.0.5...v1.0.6) (2026-09-08)
 
 
