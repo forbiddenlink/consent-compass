@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.8](https://github.com/forbiddenlink/consent-compass/compare/v1.0.7...v1.0.8) (2026-09-11)
+
+
+### Bug Fixes
+
+* **deps:** bump @arcjet/next to 1.12.0 to stop idle GOAWAY crashes ([#79](https://github.com/forbiddenlink/consent-compass/issues/79)) ([d3887e8](https://github.com/forbiddenlink/consent-compass/commit/d3887e8939508932a8f6a9b5a48fc520b6baf98e))
+* **sentry:** ship the client SDK under Turbopack and load instrumentation ([#77](https://github.com/forbiddenlink/consent-compass/issues/77)) ([f63f58e](https://github.com/forbiddenlink/consent-compass/commit/f63f58e0c299ec2001a8858bf30ebdffaa5ce1e5))
+
 ## [1.0.7](https://github.com/forbiddenlink/consent-compass/compare/v1.0.6...v1.0.7) (2026-09-10)
 
 
