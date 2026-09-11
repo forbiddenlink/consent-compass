@@ -21,7 +21,7 @@
   "dependencies": {
     "@ai-sdk/google": "^4.0.63",
     "@ai-sdk/openai": "^4.0.58",
-    "@arcjet/next": "^1.11.0",
+    "@arcjet/next": "^1.12.0",
     "@react-pdf/renderer": "^4.9.0",
     "@sentry/nextjs": "^10.72.0",
     "@t3-oss/env-nextjs": "^0.13.11",
