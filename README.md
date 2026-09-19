@@ -1,45 +1,59 @@
 # Consent Compass
 
-Evidence-first consent scanning.
+Evidence-first consent/cookie-banner scanning tool. Enter a URL and get a prosecutor-grade
+report: screenshots, detected signals, findings, and a compliance score.
 
-**Portfolio-first v0 goal:** URL → scan → a prosecutor-grade report UI (screenshots, signals, findings, and a score).
+Live at https://consent-compass.vercel.app.
 
-## What’s in v0 right now
+## How it works
 
-- Next.js (App Router) + TypeScript + Tailwind
-- `/api/scan` API route that uses **Playwright (Chromium)** to:
-  - load the URL
-  - take a full-page screenshot (saved to `/tmp/...png`)
-  - run **heuristics** to detect a consent banner and common accept/reject actions
-- A report-style UI on `/` that displays:
-  - overall score + category scores
-  - findings
-  - detected signals + artifact path
+`/api/scan` drives Playwright (Chromium) to load a URL, screenshot it, and run heuristics that
+detect the consent banner and its accept/reject actions. From there:
 
-## Run it
+- **Multi-layer CMP detection** clicks through preference layers, counts the real clicks needed
+  to reject, and detects shadow-DOM consent banners
+- **Friction scoring** combines click asymmetry (extra clicks to reject vs. accept) and dark
+  pattern language detection into a 0-100 score
+- **Cookie categorization** matches cookies against a pattern database of known vendors
+- **History and diff** store scan results (SQLite/Postgres) so you can compare two scans and see
+  compliance regressions over time
+- **Export** as PDF (annotated screenshots), JSON, or a CSV cookie inventory
+
+## Quickstart
 
 ```bash
-cd /Volumes/LizsDisk/consent-compass
 pnpm install
-pnpm dev --port 3007
+pnpm dev
 ```
 
-Open: http://localhost:3007
+Open http://localhost:3000 (or set `CC_PORT` if you use `scripts/run-baseline-scans.mjs`).
 
-## Notes / next upgrades (to make it “big swing”)
+### Env vars
 
-1. **Click-friction symmetry**
-   - measure clicks to “Accept all” vs “Reject all”
-   - flag hidden reject (second layer, tiny link, etc.)
+See `src/env.ts` for the validated schema. `GROQ_API_KEY`, `RESEND_API_KEY`, `TRIGGER_API_KEY`,
+and `TRIGGER_SECRET_KEY` are required server-side; `NEXT_PUBLIC_POSTHOG_KEY` and the Trigger.dev
+project vars are optional. Set `SKIP_ENV_VALIDATION=1` to bypass the schema for a quick local run.
 
-2. **Pre-consent tracking evidence**
-   - record cookies + network requests before any consent
-   - generate a timeline of “tracking started at T+X ms”
+## Scripts
 
-3. **Evidence pack export**
-   - PDF/markdown report with annotated screenshots and a reproducible run
+```bash
+pnpm dev
+pnpm build             # postbuild runs next-sitemap
+pnpm lint              # eslint
+pnpm biome:check / pnpm biome:fix / pnpm biome:format   # run separately from lint
+pnpm test / pnpm test:run / pnpm test:coverage
+pnpm analyze           # ANALYZE=true next build
+```
 
-4. **Dark Pattern modules** (platform direction)
-   - cancellation flows
-   - subscription dark patterns
-   - pricing/fee reveal patterns
+## Stack
+
+Next.js (App Router), TypeScript, Tailwind CSS, Playwright, Trigger.dev for background scan
+jobs, better-sqlite3 for tracker/category data, Vitest + Testing Library. See `CLAUDE.md` for
+the full architecture and API route layout.
+
+## Resources
+
+- [Open Cookie Database](https://github.com/jkwakman/Open-Cookie-Database)
+- [WhoTracksMe](https://github.com/whotracksme/whotracks.me)
+- [CNIL Dark Patterns Guide](https://www.cnil.fr/en/dark-patterns-cookie-banners)
+- [Google Consent Mode v2](https://developers.google.com/tag-platform/security/guides/consent)
