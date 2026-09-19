@@ -17,9 +17,9 @@ report out: screenshots, detected signals, findings, and a compliance score.
 
 ## Commands
 
-- `pnpm dev` - dev server (README uses `pnpm dev --port 3007`; the
-  `CC_PORT` env var, default 3007, is read by `scripts/run-baseline-scans.mjs`,
-  not by `next dev` itself)
+- `pnpm dev` - dev server on http://localhost:3000; the `CC_PORT` env var,
+  default 3007, is read by `scripts/run-baseline-scans.mjs`, not by
+  `next dev` itself
 - `pnpm build` - production build (`postbuild` runs `next-sitemap`)
 - `pnpm lint` - ESLint (`eslint`)
 - `pnpm biome:check` / `pnpm biome:fix` / `pnpm biome:format` - Biome, run
