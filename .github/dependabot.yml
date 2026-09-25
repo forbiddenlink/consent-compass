@@ -28,6 +28,12 @@ updates:
       # dies. Drop this once the plugin ships ESLint 10 support.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
+      # typescript-eslint has no TS 7 support yet: eslint aborts with
+      # "typescript-eslint does not support TS 7.0" before linting anything.
+      # Tracked upstream at typescript-eslint/typescript-eslint#10940; drop this
+      # once that ships.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     labels: ["dependencies"]
     commit-message:
       prefix: "chore(deps):"
