@@ -46,6 +46,8 @@ import {
   type BannerBounds,
 } from "@/lib/screenshots";
 
+import { isRequestAllowed } from "@/lib/ssrf";
+
 const SCANNER_VERSION = "0.10.0"; // Added Multi-Regulation Compliance Scoring (Phase 5.1)
 
 const UA =
@@ -62,6 +64,28 @@ export async function scanUrl(url: string): Promise<ScanResult> {
     extraHTTPHeaders: {
       "Sec-GPC": "1",
     },
+  });
+  // SSRF guard: re-validate every request (navigation, redirect hops,
+  // subresources) so a public URL cannot bounce the browser to a private host.
+  const hostVerdicts = new Map<string, Promise<boolean>>();
+  await context.route("**/*", async (route) => {
+    const reqUrl = route.request().url();
+    let key = reqUrl;
+    try {
+      key = new URL(reqUrl).origin;
+    } catch {
+      // malformed: isRequestAllowed will reject it
+    }
+    let verdict = hostVerdicts.get(key);
+    if (!verdict) {
+      verdict = isRequestAllowed(reqUrl);
+      hostVerdicts.set(key, verdict);
+    }
+    if (await verdict) {
+      await route.continue();
+    } else {
+      await route.abort("blockedbyclient");
+    }
   });
   const page = await context.newPage();
 

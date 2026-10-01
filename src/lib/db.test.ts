@@ -1,4 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import Database from "better-sqlite3";
 import {
   initDb,
@@ -8,6 +11,8 @@ import {
   getAllDomains,
   extractDomain,
   deleteScan,
+  DbInitError,
+  _resetDbInitLogForTests,
 } from "./db";
 import type { ScanResult } from "./types";
 
@@ -340,5 +345,41 @@ describe("Database operations", () => {
       const deleted = deleteScan(999, db);
       expect(deleted).toBe(false);
     });
+  });
+});
+
+describe("initDb file persistence", () => {
+  let dir: string;
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), "cc-db-"));
+    _resetDbInitLogForTests();
+  });
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+    vi.restoreAllMocks();
+  });
+
+  it("creates a missing parent directory before opening the file", () => {
+    const path = join(dir, "nested", "data", "scans.db");
+    expect(existsSync(join(dir, "nested"))).toBe(false);
+    const database = initDb(path);
+    try {
+      expect(existsSync(path)).toBe(true);
+      const id = saveScan(createMockScanResult(), database);
+      expect(getScanById(id, database)).not.toBeNull();
+    } finally {
+      database.close();
+    }
+  });
+
+  it("throws DbInitError and logs once with context when the path is unusable", () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const bad = "/dev/null/x/scans.db"; // parent is a file, mkdir cannot succeed
+    expect(() => initDb(bad)).toThrow(DbInitError);
+    expect(() => initDb(bad)).toThrow(DbInitError);
+    expect(err).toHaveBeenCalledTimes(1);
+    const logged = String(err.mock.calls[0].join(" "));
+    expect(logged).toContain(bad);
+    expect(logged).toMatch(/read-only|serverless|Vercel/i);
   });
 });

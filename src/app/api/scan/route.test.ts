@@ -3,6 +3,16 @@ import { POST } from './route'
 import { resetAllRateLimits } from '@/lib/rateLimit'
 
 // Mock the scan module
+// Keep route tests offline: DNS resolution is covered in ssrf.test.ts.
+vi.mock('@/lib/ssrf', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/ssrf')>()
+  return {
+    ...actual,
+    assertPublicHost: (host: string) =>
+      actual.assertPublicHost(host, async () => [{ address: '93.184.216.34', family: 4 }]),
+  }
+})
+
 vi.mock('@/lib/scan', () => ({
   scanUrl: vi.fn(),
 }))

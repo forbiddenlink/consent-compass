@@ -1,6 +1,21 @@
 import Database from "better-sqlite3";
-import { join } from "path";
+import { mkdirSync } from "node:fs";
+import { dirname, join } from "path";
 import type { ScanResult, ScanStatus } from "./types";
+
+export class DbInitError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = "DbInitError";
+  }
+}
+
+let dbInitErrorLogged = false;
+
+/** Test helper: allow the once-only init error log to fire again. */
+export function _resetDbInitLogForTests(): void {
+  dbInitErrorLogged = false;
+}
 
 // Database singleton
 let db: Database.Database | null = null;
@@ -29,7 +44,24 @@ export function initDb(dbPath?: string): Database.Database {
     return db;
   }
 
-  const database = new Database(path);
+  let database: Database.Database;
+  try {
+    if (path !== ":memory:") {
+      mkdirSync(dirname(path), { recursive: true });
+    }
+    database = new Database(path);
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    if (!dbInitErrorLogged) {
+      dbInitErrorLogged = true;
+      console.error(
+        `[DB] Cannot open SQLite database at "${path}" (cwd: ${process.cwd()}): ${message}. ` +
+          "Scan history will not be saved. On Vercel/serverless the filesystem is read-only " +
+          "or ephemeral, so a local SQLite file cannot persist there; a hosted database is required.",
+      );
+    }
+    throw new DbInitError(`Cannot open database at ${path}: ${message}`, { cause });
+  }
 
   // Enable WAL mode for better concurrent read performance
   database.pragma("journal_mode = WAL");

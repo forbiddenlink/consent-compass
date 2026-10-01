@@ -4,7 +4,7 @@ import { scanUrl } from "@/lib/scan";
 import { scanUrl as triggerScanUrl } from "@/trigger/compliance-scan";
 import {
   ScanRequestSchema,
-  validateAndNormalizeUrl,
+  validateAndResolveUrl,
   ValidationError,
   TimeoutError,
   RateLimitError,
@@ -14,7 +14,7 @@ import {
   checkDomainLimit,
   getRateLimitHeaders,
 } from "@/lib/rateLimit";
-import { initDb, saveScan } from "@/lib/db";
+import { DbInitError, initDb, saveScan } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
     const body = ScanRequestSchema.parse(await req.json());
 
     // Validate and normalize URL
-    const urlResult = validateAndNormalizeUrl(body.url);
+    const urlResult = await validateAndResolveUrl(body.url);
     if (!urlResult.valid) {
       return NextResponse.json(
         {
@@ -131,8 +131,11 @@ export async function POST(req: Request) {
           initDb();
           scanId = saveScan(result);
         } catch (dbError) {
-          // Log but don't fail the request if DB save fails
-          console.error("[Scan DB Error]", dbError);
+          // Don't fail the request if DB save fails. DbInitError is already
+          // logged once with context by initDb; log anything else here.
+          if (!(dbError instanceof DbInitError)) {
+            console.error("[Scan DB Error]", dbError);
+          }
         }
       }
 
