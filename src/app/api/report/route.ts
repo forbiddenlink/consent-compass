@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { scanUrl } from "@/lib/scan";
-import { validateAndNormalizeUrl } from "@/lib/validation";
+import { validateAndResolveUrl } from "@/lib/validation";
 import { generatePdfFromHtml } from "@/lib/pdf";
 import { renderReportHtml } from "@/components/ReportTemplate";
 
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
   }
 
   // Validate URL
-  const validation = validateAndNormalizeUrl(url);
+  const validation = await validateAndResolveUrl(url);
   if (!validation.valid) {
     return NextResponse.json(
       { error: validation.error },

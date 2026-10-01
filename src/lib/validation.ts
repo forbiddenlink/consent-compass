@@ -1,48 +1,5 @@
 import { z } from "zod";
-
-/**
- * Private/internal IP ranges that should not be scanned
- */
-const PRIVATE_IP_PATTERNS = [
-  /^127\./,                          // localhost
-  /^10\./,                           // Class A private
-  /^172\.(1[6-9]|2[0-9]|3[0-1])\./,  // Class B private
-  /^192\.168\./,                     // Class C private
-  /^169\.254\./,                     // Link-local
-  /^0\./,                            // "This" network
-  /^fc00:/i,                         // IPv6 ULA
-  /^fe80:/i,                         // IPv6 link-local
-  /^\[?::1\]?$/,                      // IPv6 localhost (with or without brackets)
-];
-
-const BLOCKED_HOSTNAMES = [
-  "localhost",
-  "localhost.localdomain",
-  "local",
-  "internal",
-  "intranet",
-];
-
-/**
- * Check if a hostname resolves to a private/internal IP
- */
-function isPrivateHost(hostname: string): boolean {
-  const lower = hostname.toLowerCase();
-
-  // Check blocked hostnames
-  if (BLOCKED_HOSTNAMES.includes(lower)) {
-    return true;
-  }
-
-  // Check if hostname looks like an IP and matches private ranges
-  for (const pattern of PRIVATE_IP_PATTERNS) {
-    if (pattern.test(hostname)) {
-      return true;
-    }
-  }
-
-  return false;
-}
+import { assertPublicHost, isBlockedHostname, type LookupFn } from "./ssrf";
 
 /**
  * Normalize and validate a URL for scanning
@@ -73,7 +30,7 @@ export function validateAndNormalizeUrl(input: string): {
   }
 
   // Block private/internal hosts
-  if (isPrivateHost(url.hostname)) {
+  if (isBlockedHostname(url.hostname)) {
     return { valid: false, error: "Scanning private/internal addresses is not allowed" };
   }
 
@@ -87,6 +44,19 @@ export function validateAndNormalizeUrl(input: string): {
   url.hash = "";
 
   return { valid: true, url: url.toString() };
+}
+
+/**
+ * validateAndNormalizeUrl plus DNS resolution: every A/AAAA record must be public.
+ */
+export async function validateAndResolveUrl(
+  input: string,
+  lookup?: LookupFn,
+): Promise<{ valid: true; url: string } | { valid: false; error: string }> {
+  const result = validateAndNormalizeUrl(input);
+  if (!result.valid) return result;
+  const check = await assertPublicHost(new URL(result.url).hostname, lookup);
+  return check.ok ? result : { valid: false, error: check.reason };
 }
 
 /**

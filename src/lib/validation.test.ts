@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   validateAndNormalizeUrl,
+  validateAndResolveUrl,
   ScanRequestSchema,
   ValidationError,
   TimeoutError,
@@ -132,6 +133,24 @@ describe('validateAndNormalizeUrl', () => {
     })
   })
 
+  describe('extended SSRF address forms (static)', () => {
+    it.each([
+      'http://[fe80::1]', 'http://[fd00::1]', 'http://[fc00::1]',
+      'http://[::ffff:127.0.0.1]', 'http://[::ffff:169.254.169.254]',
+      'http://100.64.0.1', 'http://100.127.0.1', 'http://224.0.0.1',
+      'http://[ff02::1]', 'http://169.254.169.254', 'http://metadata.google.internal',
+      'http://2130706433', 'http://0x7f.1', 'http://[::]',
+    ])('blocks %s', (u) => {
+      expect(validateAndNormalizeUrl(u)).toMatchObject({ valid: false })
+    })
+
+    it('still allows public hosts and 100.63 / 100.128 neighbours', () => {
+      expect(validateAndNormalizeUrl('http://100.63.0.1')).toMatchObject({ valid: true })
+      expect(validateAndNormalizeUrl('http://100.128.0.1')).toMatchObject({ valid: true })
+      expect(validateAndNormalizeUrl('https://example.com')).toMatchObject({ valid: true })
+    })
+  })
+
   describe('SSRF prevention', () => {
     it('blocks consent-compass domain', () => {
       expect(validateAndNormalizeUrl('https://consent-compass.com')).toMatchObject({ valid: false })
@@ -224,5 +243,25 @@ describe('Custom error types', () => {
     const error = new BlockedError()
     expect(error.name).toBe('BlockedError')
     expect(error.message).toBe('Request blocked')
+  })
+})
+
+describe('validateAndResolveUrl (DNS)', () => {
+  it('rejects a public-looking hostname that resolves to a private IP', async () => {
+    const lookup = vi.fn().mockResolvedValue([{ address: '10.1.2.3', family: 4 }])
+    const r = await validateAndResolveUrl('https://rebind.example.com', lookup)
+    expect(r).toMatchObject({ valid: false })
+    expect(lookup).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects statically-blocked input without doing DNS', async () => {
+    const lookup = vi.fn()
+    expect(await validateAndResolveUrl('http://[::ffff:127.0.0.1]', lookup)).toMatchObject({ valid: false })
+    expect(lookup).not.toHaveBeenCalled()
+  })
+
+  it('accepts a hostname resolving only to public addresses', async () => {
+    const lookup = vi.fn().mockResolvedValue([{ address: '93.184.216.34', family: 4 }])
+    expect(await validateAndResolveUrl('example.com', lookup)).toEqual({ valid: true, url: 'https://example.com/' })
   })
 })
