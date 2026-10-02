@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.9](https://github.com/forbiddenlink/consent-compass/compare/v1.0.8...v1.0.9) (2026-10-02)
+
+
+### Bug Fixes
+
+* close SSRF gaps in URL validation and make SQLite persistence open ([#89](https://github.com/forbiddenlink/consent-compass/issues/89)) ([b809d3f](https://github.com/forbiddenlink/consent-compass/commit/b809d3f6e94a0a91b555999253db0ca214d3de8d))
+* **deps:** apply override fix plan ([#91](https://github.com/forbiddenlink/consent-compass/issues/91)) ([641cf7d](https://github.com/forbiddenlink/consent-compass/commit/641cf7de375af215bc4bcd5b10a45b25523121c8))
+* **deps:** apply override fix plan (round 2) ([#92](https://github.com/forbiddenlink/consent-compass/issues/92)) ([2deb5a3](https://github.com/forbiddenlink/consent-compass/commit/2deb5a3a89f7eda2045a47fffb50140181fc99c0))
+
 ## [1.0.8](https://github.com/forbiddenlink/consent-compass/compare/v1.0.7...v1.0.8) (2026-09-21)
 
 
