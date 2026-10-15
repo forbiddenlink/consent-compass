@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.10](https://github.com/forbiddenlink/consent-compass/compare/v1.0.9...v1.0.10) (2026-10-15)
+
+
+### Bug Fixes
+
+* **web:** add og:image and twitter card metadata ([#99](https://github.com/forbiddenlink/consent-compass/issues/99)) ([30f3536](https://github.com/forbiddenlink/consent-compass/commit/30f3536fcba7d4c7bc1a3e06a32e99e383227024))
+
 ## [1.0.9](https://github.com/forbiddenlink/consent-compass/compare/v1.0.8...v1.0.9) (2026-10-05)
 
 
