@@ -1,0 +1,1 @@
+Consent Compass: enter a URL to scan a site's cookie consent banner
