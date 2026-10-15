@@ -20,6 +20,20 @@ export const metadata: Metadata = {
   title: "Consent Compass - Cookie Banner Compliance Scanner",
   description:
     "Analyze websites for consent banner compliance, cookie categorization, and GDPR dark pattern detection",
+  metadataBase: new URL("https://consent-compass.vercel.app"),
+  openGraph: {
+    type: "website",
+    siteName: "Consent Compass",
+    title: "Consent Compass - Cookie Banner Compliance Scanner",
+    description:
+      "Analyze websites for consent banner compliance, cookie categorization, and GDPR dark pattern detection",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Consent Compass - Cookie Banner Compliance Scanner",
+    description:
+      "Analyze websites for consent banner compliance, cookie categorization, and GDPR dark pattern detection",
+  },
 };
 
 export default function RootLayout({
