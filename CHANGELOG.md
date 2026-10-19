@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.11](https://github.com/forbiddenlink/consent-compass/compare/v1.0.10...v1.0.11) (2026-10-19)
+
+
+### Bug Fixes
+
+* **deps:** clear transitive CVEs with bounded overrides ([#101](https://github.com/forbiddenlink/consent-compass/issues/101)) ([3eb6a4c](https://github.com/forbiddenlink/consent-compass/commit/3eb6a4c260913bd952d7b20a222353fb251d96b4))
+
 ## [1.0.10](https://github.com/forbiddenlink/consent-compass/compare/v1.0.9...v1.0.10) (2026-10-15)
 
 
