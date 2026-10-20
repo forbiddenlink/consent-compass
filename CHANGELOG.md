@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.12](https://github.com/forbiddenlink/consent-compass/compare/v1.0.11...v1.0.12) (2026-10-20)
+
+
+### Bug Fixes
+
+* **deps:** cap unbounded pnpm overrides at the next major ([#106](https://github.com/forbiddenlink/consent-compass/issues/106)) ([0d19de7](https://github.com/forbiddenlink/consent-compass/commit/0d19de7f3203efb1a05d5592dabfb2499533080e))
+
 ## [1.0.11](https://github.com/forbiddenlink/consent-compass/compare/v1.0.10...v1.0.11) (2026-10-19)
 
 
