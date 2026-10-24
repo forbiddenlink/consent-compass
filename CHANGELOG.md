@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.13](https://github.com/forbiddenlink/consent-compass/compare/v1.0.12...v1.0.13) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** raise dompurify override floor to 3.4.17 ([#114](https://github.com/forbiddenlink/consent-compass/issues/114)) ([05e4dc1](https://github.com/forbiddenlink/consent-compass/commit/05e4dc17979adba692632d5b8e45bab3a9d1d7e9))
+
 ## [1.0.12](https://github.com/forbiddenlink/consent-compass/compare/v1.0.11...v1.0.12) (2026-10-20)
 
 
