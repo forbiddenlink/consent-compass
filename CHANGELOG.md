@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.14](https://github.com/forbiddenlink/consent-compass/compare/v1.0.13...v1.0.14) (2026-10-27)
+
+
+### Bug Fixes
+
+* **deps:** force patched undici 7.x and bump trigger.dev to 4.8.1 for zod 4 ([#120](https://github.com/forbiddenlink/consent-compass/issues/120)) ([859734a](https://github.com/forbiddenlink/consent-compass/commit/859734af6aa985991dff24a94bebd0471a1d528e))
+
 ## [1.0.13](https://github.com/forbiddenlink/consent-compass/compare/v1.0.12...v1.0.13) (2026-10-24)
 
 
