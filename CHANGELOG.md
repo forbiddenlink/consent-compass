@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.15](https://github.com/forbiddenlink/consent-compass/compare/v1.0.14...v1.0.15) (2026-10-29)
+
+
+### Bug Fixes
+
+* **deps:** raise systeminformation and @hono/node-server override floors ([#123](https://github.com/forbiddenlink/consent-compass/issues/123)) ([06a1ab5](https://github.com/forbiddenlink/consent-compass/commit/06a1ab59f6330efa8d5020e8a4180fdd482424eb))
+
 ## [1.0.14](https://github.com/forbiddenlink/consent-compass/compare/v1.0.13...v1.0.14) (2026-10-27)
 
 
