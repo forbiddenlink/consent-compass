@@ -44,7 +44,7 @@ jobs:
 
       # Secret scanning with TruffleHog
       - name: TruffleHog
-        uses: trufflesecurity/trufflehog@291e3f03c3c67e284b62c559b6e9535b1ee6f5e5 # main
+        uses: trufflesecurity/trufflehog@5a3176fcddc07bed6ee62a84adb613091030b243 # main
         with:
           extra_args: --only-verified
         continue-on-error: true
