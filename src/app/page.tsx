@@ -58,7 +58,7 @@ export default function Home() {
               <span className="inline-block h-3 w-3 bg-signal" aria-hidden="true" />
               Consent Compass
             </span>
-            <span>v0 — evidence-first consent scan</span>
+            <span>v0 · evidence-first consent scan</span>
           </header>
 
           <h1 className="display mt-12 max-w-5xl text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
@@ -107,7 +107,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-12 border-t-2 border-ink pt-4 font-mono text-xs text-ink-soft">
-          v0 — Heuristic scan. Next: interaction replay, click-friction
+          v0 · Heuristic scan. Next: interaction replay, click-friction
           symmetry, pre-consent evidence deep-dive.
         </footer>
       </main>
