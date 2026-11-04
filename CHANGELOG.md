@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/forbiddenlink/consent-compass/compare/v1.0.15...v1.1.0) (2026-11-04)
+
+
+### Features
+
+* **ui:** click-path ledger hero and cobalt/signal-orange system ([#128](https://github.com/forbiddenlink/consent-compass/issues/128)) ([e56b9ca](https://github.com/forbiddenlink/consent-compass/commit/e56b9ca3634ad5b6c9b08b9c14f05ab3d6eea905))
+
 ## [1.0.15](https://github.com/forbiddenlink/consent-compass/compare/v1.0.14...v1.0.15) (2026-10-29)
 
 
