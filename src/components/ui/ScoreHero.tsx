@@ -8,26 +8,14 @@ interface ScoreHeroProps {
 
 export function ScoreHero({ score }: ScoreHeroProps) {
   const styles = useMemo(() => {
-    if (score >= 80) return {
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/20",
-      text: "text-emerald-400"
-    };
-    if (score >= 60) return {
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/20",
-      text: "text-amber-400"
-    };
-    return {
-      bg: "bg-rose-500/10",
-      border: "border-rose-500/20",
-      text: "text-rose-400"
-    };
+    if (score >= 80) return "bg-cobalt text-white border-ink";
+    if (score >= 60) return "bg-panel text-ink border-ink";
+    return "bg-signal text-ink border-ink";
   }, [score]);
 
   return (
-    <div className={`inline-flex h-20 w-20 items-center justify-center rounded-xl border flex-shrink-0 ${styles.bg} ${styles.border}`}>
-      <span className={`text-4xl font-semibold tracking-tighter tabular-nums ${styles.text}`}>{score}</span>
+    <div className={`inline-flex h-20 w-24 flex-shrink-0 items-center justify-center border-2 ${styles}`}>
+      <span className="display text-5xl tabular-nums">{score}</span>
     </div>
   );
 }
