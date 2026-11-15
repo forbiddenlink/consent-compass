@@ -12,7 +12,7 @@ report out: screenshots, detected signals, findings, and a compliance score.
 - Sentry, Axiom, Langfuse for observability; Resend for email; Arcjet for
   request protection; PostHog for analytics
 - better-sqlite3 for local tracker/category data (`scripts/generate-tracker-db.mjs`)
-- pnpm (`packageManager: pnpm@10.34.5`)
+- pnpm (`packageManager: pnpm@10.34.7`)
 - Vitest + Testing Library
 
 ## Commands
@@ -32,8 +32,9 @@ report out: screenshots, detected signals, findings, and a compliance score.
 - `src/app/api/` - route handlers: `scan`, `rescan`, `report`, `history`,
   `compliance`, `categorize`, `diff`
 - `src/components/`, `src/components/ui/`
-- `src/lib/` - `cookies/`, `resend.ts`, plus the scan/compliance/heuristics
+- `src/lib/` - `cookies/`, plus the scan/compliance/heuristics
   logic covered by `src/lib/*.test.ts`
+- `lib/` (repo root) - `resend.ts`, `compliance-scan.ts`
 - `src/trigger/` - Trigger.dev task definitions
 - `src/mocks/` - MSW mocks for tests
 - `src/env.ts` - typed env schema (`@t3-oss/env-nextjs`)
