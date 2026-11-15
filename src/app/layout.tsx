@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   description:
     "Analyze websites for consent banner compliance, cookie categorization, and GDPR dark pattern detection",
   metadataBase: new URL("https://consent-compass.vercel.app"),
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Consent Compass",
