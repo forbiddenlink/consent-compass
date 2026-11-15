@@ -40,6 +40,11 @@ function startCleanup() {
         rateLimitStore.delete(key);
       }
     }
+    for (const [domain, lastScan] of domainLimitStore.entries()) {
+      if (now - lastScan >= DOMAIN_COOLDOWN) {
+        domainLimitStore.delete(domain);
+      }
+    }
   }, CLEANUP_INTERVAL);
 
   // Don't prevent Node.js from exiting
@@ -128,10 +133,11 @@ export function checkDomainLimit(domain: string): {
   allowed: boolean;
   retryAfter?: number;
 } {
+  startCleanup();
   const lastScan = domainLimitStore.get(domain);
   const now = Date.now();
 
-  if (lastScan && now - lastScan < DOMAIN_COOLDOWN) {
+  if (lastScan !== undefined && now - lastScan < DOMAIN_COOLDOWN) {
     return {
       allowed: false,
       retryAfter: Math.ceil((DOMAIN_COOLDOWN - (now - lastScan)) / 1000),
