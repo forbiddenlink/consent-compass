@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/forbiddenlink/consent-compass/compare/v1.1.0...v1.1.1) (2026-11-15)
+
+
+### Bug Fixes
+
+* **deps:** lift glob/minimatch to patched majors ([#134](https://github.com/forbiddenlink/consent-compass/issues/134)) ([aa8484c](https://github.com/forbiddenlink/consent-compass/commit/aa8484ce6e808ee2e3d04db077ec3d6ba2159413))
+* **rate-limit:** clean up expired domain cooldowns and honor a zero timestamp ([#136](https://github.com/forbiddenlink/consent-compass/issues/136)) ([8c4638f](https://github.com/forbiddenlink/consent-compass/commit/8c4638f690fbde37fb60789ab425ba82a6d91cb9))
+
 ## [1.1.0](https://github.com/forbiddenlink/consent-compass/compare/v1.0.15...v1.1.0) (2026-11-04)
 
 
