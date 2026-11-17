@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/forbiddenlink/consent-compass/compare/v1.1.2...v1.1.3) (2026-11-17)
+
+
+### Bug Fixes
+
+* **deploy:** include Playwright runtime in scan trace ([#143](https://github.com/forbiddenlink/consent-compass/issues/143)) ([92325e5](https://github.com/forbiddenlink/consent-compass/commit/92325e55cc9d950d203328e899f77ad1f589373a))
+
 ## [1.1.2](https://github.com/forbiddenlink/consent-compass/compare/v1.1.1...v1.1.2) (2026-11-15)
 
 
