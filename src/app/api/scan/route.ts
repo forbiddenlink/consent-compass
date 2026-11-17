@@ -10,76 +10,18 @@ import {
   RateLimitError,
 } from "@/lib/validation";
 import {
-  checkRateLimit,
-  checkDomainLimit,
-  getRateLimitHeaders,
-} from "@/lib/rateLimit";
+  checkClientGate,
+  checkDomainGate,
+  acquireScanSlot,
+} from "@/lib/scanGate";
 import { DbInitError, initDb, saveScan } from "@/lib/db";
 
 export const runtime = "nodejs";
 
-// Maximum concurrent scans (simple semaphore)
-let activeScans = 0;
-const MAX_CONCURRENT_SCANS = 3;
-
-function getClientId(req: Request): string {
-  // Try to get real IP from various headers
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-  const realIp = req.headers.get("x-real-ip");
-  if (realIp) {
-    return realIp;
-  }
-  // Fallback to a hash of user-agent + some request properties
-  return "anonymous";
-}
-
 export async function POST(req: Request) {
-  const clientId = getClientId(req);
-
-  // Check rate limit
-  const rateLimit = checkRateLimit(clientId);
-  const rateLimitHeaders = getRateLimitHeaders(clientId);
-
-  if (!rateLimit.allowed) {
-    return NextResponse.json(
-      {
-        status: "error",
-        error:
-          "Rate limit exceeded. Please wait before making another request.",
-        code: "RATE_LIMITED",
-        retryAfter: rateLimit.retryAfter,
-      },
-      {
-        status: 429,
-        headers: {
-          ...rateLimitHeaders,
-          "Retry-After": String(rateLimit.retryAfter),
-        },
-      },
-    );
-  }
-
-  // Check concurrent scan limit
-  if (activeScans >= MAX_CONCURRENT_SCANS) {
-    return NextResponse.json(
-      {
-        status: "error",
-        error: "Server is busy. Please try again in a moment.",
-        code: "SERVER_BUSY",
-        retryAfter: 10,
-      },
-      {
-        status: 503,
-        headers: {
-          ...rateLimitHeaders,
-          "Retry-After": "10",
-        },
-      },
-    );
-  }
+  const gate = checkClientGate(req);
+  if (!gate.ok) return gate.response;
+  const rateLimitHeaders = gate.rateLimitHeaders;
 
   try {
     // Parse and validate request body
@@ -100,27 +42,11 @@ export async function POST(req: Request) {
 
     // Check domain-specific rate limit
     const domain = new URL(urlResult.url).hostname;
-    const domainLimit = checkDomainLimit(domain);
-    if (!domainLimit.allowed) {
-      return NextResponse.json(
-        {
-          status: "error",
-          error: `This domain was recently scanned. Please wait ${domainLimit.retryAfter} seconds.`,
-          code: "DOMAIN_COOLDOWN",
-          retryAfter: domainLimit.retryAfter,
-        },
-        {
-          status: 429,
-          headers: {
-            ...rateLimitHeaders,
-            "Retry-After": String(domainLimit.retryAfter),
-          },
-        },
-      );
-    }
+    const cooldown = checkDomainGate(domain, rateLimitHeaders);
+    if (cooldown) return cooldown;
 
     // Execute scan
-    activeScans++;
+    const release = acquireScanSlot();
     try {
       const result = await scanUrl(urlResult.url);
 
@@ -153,7 +79,7 @@ export async function POST(req: Request) {
       const response = scanId !== undefined ? { ...result, scanId } : result;
       return NextResponse.json(response, { headers: rateLimitHeaders });
     } finally {
-      activeScans--;
+      release();
     }
   } catch (err) {
     // Handle specific error types
