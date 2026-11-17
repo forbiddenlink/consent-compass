@@ -5,7 +5,7 @@
  * by navigating through CMP preference layers.
  */
 
-import type { Page, Locator } from "playwright";
+import type { Page, Locator } from "playwright-core";
 import type { ConsentFinding } from "./types";
 import { classifyButtonText, type ButtonClassification } from "./heuristics";
 

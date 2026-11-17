@@ -17,6 +17,7 @@ import {
 import { DbInitError, initDb, saveScan } from "@/lib/db";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 // Maximum concurrent scans (simple semaphore)
 let activeScans = 0;

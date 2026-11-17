@@ -7,11 +7,19 @@ const withBundleAnalyzer = withBundleAnalyzerInit({ enabled: process.env.ANALYZE
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // Playwright resolves browsers.json dynamically, so Next's tracer cannot discover it.
-  // Keep the runtime package only with the scan route that imports Playwright.
+  // Keep the headless-Chromium packages out of the bundler so their runtime
+  // files (playwright-core browsers.json, @sparticuz/chromium bin/*.br) resolve.
+  serverExternalPackages: ["@sparticuz/chromium", "playwright-core"],
+  // Neither package's dynamic file reads can be discovered by Next's tracer, so
+  // include them explicitly for the routes that launch a browser.
   outputFileTracingIncludes: {
     "/api/scan": [
       "./node_modules/.pnpm/playwright-core@*/node_modules/playwright-core/**",
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/**",
+    ],
+    "/api/report": [
+      "./node_modules/.pnpm/playwright-core@*/node_modules/playwright-core/**",
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/**",
     ],
   },
   async headers() {

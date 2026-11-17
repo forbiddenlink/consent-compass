@@ -9,7 +9,7 @@
  * Reference: https://www.w3.org/WAI/WCAG21/Understanding/
  */
 
-import type { Page, Locator } from "playwright";
+import type { Page, Locator } from "playwright-core";
 import type { ConsentFinding } from "@/lib/types";
 
 // ============================================================================

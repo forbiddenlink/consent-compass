@@ -2,13 +2,13 @@
  * PDF generation using Playwright.
  */
 
-import { chromium } from "playwright";
+import { launchBrowser } from "@/lib/browser";
 
 /**
  * Generate a PDF from HTML content.
  */
 export async function generatePdfFromHtml(html: string): Promise<Buffer> {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
   try {

@@ -12,7 +12,7 @@
  * Reference: https://globalprivacycontrol.github.io/gpc-spec/
  */
 
-import type { Page } from "playwright";
+import type { Page } from "playwright-core";
 import type { ConsentFinding } from "@/lib/types";
 
 // ============================================================================

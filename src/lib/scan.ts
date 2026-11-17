@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { launchBrowser } from "@/lib/browser";
 import type { ScanResult, ConsentFinding, CategorizedCookie, TrackedRequest } from "@/lib/types";
 import { categorizeCookies, summarizeCookiesByCategory, hasPreConsentTracking } from "@/lib/cookies";
 import {
@@ -56,7 +56,7 @@ const UA =
 export async function scanUrl(url: string): Promise<ScanResult> {
   const started = Date.now();
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await launchBrowser();
   const context = await browser.newContext({
     userAgent: UA,
     viewport: { width: 1440, height: 900 },

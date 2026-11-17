@@ -5,6 +5,7 @@ import { generatePdfFromHtml } from "@/lib/pdf";
 import { renderReportHtml } from "@/components/ReportTemplate";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
