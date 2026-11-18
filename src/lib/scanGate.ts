@@ -33,7 +33,7 @@ export type GateResult =
   | { ok: true; rateLimitHeaders: Record<string, string> }
   | { ok: false; response: NextResponse };
 
-/** Client rate limit, then concurrency cap. Run before any other work. */
+/** Client rate limit. Run before any other work. */
 export function checkClientGate(req: Request): GateResult {
   const clientId = getClientId(req);
   const rateLimit = checkRateLimit(clientId);
@@ -55,27 +55,6 @@ export function checkClientGate(req: Request): GateResult {
           headers: {
             ...rateLimitHeaders,
             "Retry-After": String(rateLimit.retryAfter),
-          },
-        },
-      ),
-    };
-  }
-
-  if (activeScans >= MAX_CONCURRENT_SCANS) {
-    return {
-      ok: false,
-      response: NextResponse.json(
-        {
-          status: "error",
-          error: "Server is busy. Please try again in a moment.",
-          code: "SERVER_BUSY",
-          retryAfter: 10,
-        },
-        {
-          status: 503,
-          headers: {
-            ...rateLimitHeaders,
-            "Retry-After": "10",
           },
         },
       ),
@@ -109,8 +88,33 @@ export function checkDomainGate(
   );
 }
 
-/** Take a concurrency slot. Call the returned function in a finally block. */
-export function acquireScanSlot(): () => void {
+/** The 503 returned when no concurrency slot is free. */
+export function serverBusyResponse(
+  rateLimitHeaders: Record<string, string>,
+): NextResponse {
+  return NextResponse.json(
+    {
+      status: "error",
+      error: "Server is busy. Please try again in a moment.",
+      code: "SERVER_BUSY",
+      retryAfter: 10,
+    },
+    {
+      status: 503,
+      headers: { ...rateLimitHeaders, "Retry-After": "10" },
+    },
+  );
+}
+
+/**
+ * Check the concurrency cap and take a slot in one synchronous step, so
+ * concurrent requests cannot all pass a check before any of them increments.
+ * Call it immediately before the guarded work, with no await in between.
+ * Returns an idempotent release function (call it in a finally block), or
+ * null when the cap is reached.
+ */
+export function tryAcquireScanSlot(): (() => void) | null {
+  if (activeScans >= MAX_CONCURRENT_SCANS) return null;
   activeScans++;
   let released = false;
   return () => {

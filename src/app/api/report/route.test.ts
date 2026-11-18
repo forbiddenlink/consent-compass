@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "./route";
 import { resetAllRateLimits } from "@/lib/rateLimit";
-import { acquireScanSlot, resetScanSlots, MAX_CONCURRENT_SCANS } from "@/lib/scanGate";
+import { tryAcquireScanSlot, resetScanSlots, MAX_CONCURRENT_SCANS } from "@/lib/scanGate";
 
 vi.mock("@/lib/ssrf", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/ssrf")>();
@@ -42,7 +42,7 @@ describe("GET /api/report gate", () => {
   });
 
   it("returns 503 SERVER_BUSY and does not launch a browser at the concurrency cap", async () => {
-    Array.from({ length: MAX_CONCURRENT_SCANS }, () => acquireScanSlot());
+    Array.from({ length: MAX_CONCURRENT_SCANS }, () => tryAcquireScanSlot()!);
     const res = await GET(req("10.1.0.2"));
     expect(res.status).toBe(503);
     expect((await res.json()).code).toBe("SERVER_BUSY");

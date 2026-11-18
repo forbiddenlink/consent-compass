@@ -12,7 +12,8 @@ import {
 import {
   checkClientGate,
   checkDomainGate,
-  acquireScanSlot,
+  tryAcquireScanSlot,
+  serverBusyResponse,
 } from "@/lib/scanGate";
 import { DbInitError, initDb, saveScan } from "@/lib/db";
 
@@ -46,7 +47,8 @@ export async function POST(req: Request) {
     if (cooldown) return cooldown;
 
     // Execute scan
-    const release = acquireScanSlot();
+    const release = tryAcquireScanSlot();
+    if (!release) return serverBusyResponse(rateLimitHeaders);
     try {
       const result = await scanUrl(urlResult.url);
 

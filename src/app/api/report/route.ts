@@ -6,7 +6,8 @@ import { renderReportHtml } from "@/components/ReportTemplate";
 import {
   checkClientGate,
   checkDomainGate,
-  acquireScanSlot,
+  tryAcquireScanSlot,
+  serverBusyResponse,
 } from "@/lib/scanGate";
 
 export const runtime = "nodejs";
@@ -51,7 +52,8 @@ export async function GET(req: Request) {
   const cooldown = checkDomainGate(new URL(normalizedUrl).hostname, rateLimitHeaders);
   if (cooldown) return cooldown;
 
-  const release = acquireScanSlot();
+  const release = tryAcquireScanSlot();
+  if (!release) return serverBusyResponse(rateLimitHeaders);
   try {
     // Run scan
     const result = await scanUrl(normalizedUrl);

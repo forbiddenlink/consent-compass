@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   checkClientGate,
   checkDomainGate,
-  acquireScanSlot,
+  tryAcquireScanSlot,
   resetScanSlots,
   MAX_CONCURRENT_SCANS,
 } from "@/lib/scanGate";
@@ -21,17 +21,24 @@ describe("scanGate", () => {
     expect(checkClientGate(req()).ok).toBe(true);
   });
 
-  it("returns 503 SERVER_BUSY at the concurrency cap and recovers on release", async () => {
-    const releases = Array.from({ length: MAX_CONCURRENT_SCANS }, () => acquireScanSlot());
-    const gate = checkClientGate(req("10.0.0.2"));
-    expect(gate.ok).toBe(false);
-    if (!gate.ok) {
-      expect(gate.response.status).toBe(503);
-      expect((await gate.response.json()).code).toBe("SERVER_BUSY");
-    }
+  it("returns null at the concurrency cap and succeeds again after a release", () => {
+    const releases = Array.from({ length: MAX_CONCURRENT_SCANS }, () => tryAcquireScanSlot()!);
+    expect(releases.every((r) => typeof r === "function")).toBe(true);
+    expect(tryAcquireScanSlot()).toBeNull();
     releases[0]();
-    releases[0](); // double release is a no-op
-    expect(checkClientGate(req("10.0.0.3")).ok).toBe(true);
+    const again = tryAcquireScanSlot();
+    expect(again).not.toBeNull();
+    expect(tryAcquireScanSlot()).toBeNull();
+    again!();
+  });
+
+  it("does not go negative on a double release", () => {
+    const r = tryAcquireScanSlot()!;
+    r();
+    r();
+    const held = Array.from({ length: MAX_CONCURRENT_SCANS }, () => tryAcquireScanSlot());
+    expect(held.every((x) => x !== null)).toBe(true);
+    expect(tryAcquireScanSlot()).toBeNull();
   });
 
   it("returns 429 once the client rate limit is exhausted", async () => {
