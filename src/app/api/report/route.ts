@@ -3,10 +3,20 @@ import { scanUrl } from "@/lib/scan";
 import { validateAndResolveUrl } from "@/lib/validation";
 import { generatePdfFromHtml } from "@/lib/pdf";
 import { renderReportHtml } from "@/components/ReportTemplate";
+import {
+  checkClientGate,
+  checkDomainGate,
+  acquireScanSlot,
+} from "@/lib/scanGate";
 
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
+  // Same gate as /api/scan: this route also launches a browser.
+  const gate = checkClientGate(req);
+  if (!gate.ok) return gate.response;
+  const rateLimitHeaders = gate.rateLimitHeaders;
+
   const { searchParams } = new URL(req.url);
   const url = searchParams.get("url");
   const format = searchParams.get("format") || "pdf";
@@ -38,6 +48,10 @@ export async function GET(req: Request) {
   const hostname = new URL(normalizedUrl).hostname.replace(/[^a-z0-9.-]/gi, "_");
   const timestamp = Date.now();
 
+  const cooldown = checkDomainGate(new URL(normalizedUrl).hostname, rateLimitHeaders);
+  if (cooldown) return cooldown;
+
+  const release = acquireScanSlot();
   try {
     // Run scan
     const result = await scanUrl(normalizedUrl);
@@ -91,6 +105,8 @@ export async function GET(req: Request) {
       { error: "Failed to generate report" },
       { status: 500 }
     );
+  } finally {
+    release();
   }
 }
 
