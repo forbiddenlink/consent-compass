@@ -119,7 +119,7 @@ async function rescanFromInfos(infos: DomainForRescan[]): Promise<RescanResult[]
           results.push(recordRescan(entry.info, entry.runId, run.result));
         } else {
           console.error(
-            `[Rescan Error] Scan for ${entry.info.domain} ${run.state === "error" ? `failed: ${run.message}` : "did not finish in time"}`
+            `[Rescan Error] Scan for ${entry.info.domain} ${run.state === "error" ? `failed: ${run.message}` : run.state === "expired" ? "expired in the queue" : "did not finish in time"}`
           );
         }
       } catch (err) {

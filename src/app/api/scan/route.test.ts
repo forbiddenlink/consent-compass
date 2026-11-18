@@ -79,12 +79,12 @@ describe('POST /api/scan', () => {
       const res = await POST(createRequest({ url: 'http://example.com' }))
       expect(res.status).toBe(202)
       expect(await res.json()).toEqual({ runId: 'run_abc12345xyz' })
-      expect(mockTrigger).toHaveBeenCalledWith('scan-url-compliance', { url: 'https://example.com/' })
+      expect(mockTrigger).toHaveBeenCalledWith('scan-url-compliance', { url: 'https://example.com/' }, { ttl: '10m' })
     })
 
     it('adds https:// if protocol missing', async () => {
       await POST(createRequest({ url: 'example.com' }))
-      expect(mockTrigger).toHaveBeenCalledWith('scan-url-compliance', { url: 'https://example.com/' })
+      expect(mockTrigger).toHaveBeenCalledWith('scan-url-compliance', { url: 'https://example.com/' }, { ttl: '10m' })
     })
 
     it('includes rate limit headers', async () => {

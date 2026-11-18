@@ -53,7 +53,7 @@ describe('GET /api/scan/[runId]', () => {
     },
   )
 
-  it.each(['FAILED', 'CRASHED', 'SYSTEM_FAILURE', 'CANCELED', 'EXPIRED'])(
+  it.each(['FAILED', 'CRASHED', 'SYSTEM_FAILURE', 'CANCELED'])(
     'maps %s to an error',
     async (status) => {
       run({ status, error: { message: 'boom' } })
@@ -62,6 +62,15 @@ describe('GET /api/scan/[runId]', () => {
       expect((await res.json()).status).toBe('error')
     },
   )
+
+  it('maps EXPIRED to a queue-busy error the UI can show', async () => {
+    run({ status: 'EXPIRED' })
+    const res = await call()
+    const json = await res.json()
+    expect(res.status).toBe(503)
+    expect(json.code).toBe('QUEUE_BUSY')
+    expect(json.error).toBe('Scan queue is busy, try again')
+  })
 
   it('keeps the DNS, refused and timeout error mappings', async () => {
     run({ status: 'FAILED', error: { message: 'page.goto: net::ERR_NAME_NOT_RESOLVED' } })

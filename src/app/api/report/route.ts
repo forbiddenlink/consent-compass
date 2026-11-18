@@ -12,6 +12,7 @@ import {
   ForeignRunError,
   getScanRun,
   mapRunError,
+  QUEUE_BUSY_RESPONSE,
   triggerScan,
   waitForScan,
   type ScanRunState,
@@ -106,6 +107,12 @@ export async function GET(req: Request) {
         { status: "pending", runId },
         { status: 202, headers: rateLimitHeaders }
       );
+    }
+    if (run.state === "expired") {
+      return NextResponse.json(QUEUE_BUSY_RESPONSE.body, {
+        status: QUEUE_BUSY_RESPONSE.status,
+        headers: rateLimitHeaders,
+      });
     }
     if (run.state === "error") {
       const mapped = mapRunError(run.message);

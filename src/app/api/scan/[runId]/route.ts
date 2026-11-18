@@ -4,6 +4,7 @@ import {
   ForeignRunError,
   getScanRun,
   mapRunError,
+  QUEUE_BUSY_RESPONSE,
 } from "@/lib/scan-runs";
 import { DbInitError, initDb, saveScanForRun } from "@/lib/db";
 
@@ -32,6 +33,12 @@ export async function GET(
 
     if (run.state === "pending") {
       return NextResponse.json({ status: "pending", runId }, { status: 202 });
+    }
+
+    if (run.state === "expired") {
+      return NextResponse.json(QUEUE_BUSY_RESPONSE.body, {
+        status: QUEUE_BUSY_RESPONSE.status,
+      });
     }
 
     if (run.state === "error") {

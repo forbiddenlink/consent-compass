@@ -20,6 +20,7 @@ export class ForeignRunError extends Error {
 
 export type ScanRunState =
   | { state: "pending" }
+  | { state: "expired" }
   | { state: "error"; message: string }
   | { state: "ok"; result: ScanResult };
 
@@ -32,8 +33,25 @@ const PENDING = new Set([
   "DELAYED",
 ]);
 
+/** An unstarted run expires after this long instead of running late. */
+export const SCAN_RUN_TTL = "10m";
+
+/** Body and status for a run that expired in the queue. */
+export const QUEUE_BUSY_RESPONSE = {
+  status: 503,
+  body: {
+    status: "error" as const,
+    error: "Scan queue is busy, try again",
+    code: "QUEUE_BUSY",
+  },
+};
+
 export async function triggerScan(url: string): Promise<string> {
-  const handle = await tasks.trigger<typeof scanTask>(SCAN_TASK_ID, { url });
+  const handle = await tasks.trigger<typeof scanTask>(
+    SCAN_TASK_ID,
+    { url },
+    { ttl: SCAN_RUN_TTL },
+  );
   return handle.id;
 }
 
@@ -42,6 +60,7 @@ export async function getScanRun(runId: string): Promise<ScanRunState> {
   if (run.taskIdentifier !== SCAN_TASK_ID) throw new ForeignRunError();
 
   if (PENDING.has(run.status)) return { state: "pending" };
+  if (run.status === "EXPIRED") return { state: "expired" };
   if (run.status === "COMPLETED" && run.output) {
     return { state: "ok", result: run.output as ScanResult };
   }

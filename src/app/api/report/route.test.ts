@@ -94,7 +94,14 @@ describe("GET /api/report", () => {
     it("triggers the task and waits for the result", async () => {
       const res = await GET(byUrl("10.3.0.1"));
       expect(res.status).toBe(200);
-      expect(mockTrigger).toHaveBeenCalledWith("scan-url-compliance", { url: "https://example.com/" });
+      expect(mockTrigger).toHaveBeenCalledWith("scan-url-compliance", { url: "https://example.com/" }, { ttl: "10m" });
+    });
+
+    it("maps an expired run to a queue-busy error", async () => {
+      mockRetrieve.mockResolvedValue({ taskIdentifier: "scan-url-compliance", status: "EXPIRED" } as never);
+      const res = await GET(byUrl("10.3.0.9", "https://expired.example.com"));
+      expect(res.status).toBe(503);
+      expect((await res.json()).error).toBe("Scan queue is busy, try again");
     });
 
     it("requires url or runId", async () => {
