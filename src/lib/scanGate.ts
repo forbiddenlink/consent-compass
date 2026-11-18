@@ -64,6 +64,35 @@ export function checkClientGate(req: Request): GateResult {
   return { ok: true, rateLimitHeaders };
 }
 
+// Status polling has its own, lenient budget so it never eats the submit
+// budget. 120 burst, refilling 2/s (120 per minute sustained). The UI polls
+// every 2s (30 per minute), so a normal poll uses a quarter of the sustained
+// rate, and several tabs from one client still fit.
+const POLL_CONFIG = { maxTokens: 120, refillRate: 2, tokensPerRequest: 1 };
+
+/** Per-client limit for GET /api/scan/{runId}. Same 429 headers shape as the submit gate. */
+export function checkPollGate(req: Request): GateResult {
+  const key = `poll:${getClientId(req)}`;
+  const limit = checkRateLimit(key, POLL_CONFIG);
+  const rateLimitHeaders = getRateLimitHeaders(key, POLL_CONFIG);
+  if (limit.allowed) return { ok: true, rateLimitHeaders };
+  return {
+    ok: false,
+    response: NextResponse.json(
+      {
+        status: "error",
+        error: "Too many status requests. Please slow down.",
+        code: "RATE_LIMITED",
+        retryAfter: limit.retryAfter,
+      },
+      {
+        status: 429,
+        headers: { ...rateLimitHeaders, "Retry-After": String(limit.retryAfter) },
+      },
+    ),
+  };
+}
+
 /** Per-domain cooldown. Returns a 429 response, or null when allowed. */
 export function checkDomainGate(
   domain: string,

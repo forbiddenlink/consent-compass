@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { GET } from './route'
 import { getDb, closeDb } from '@/lib/db'
+import { resetAllRateLimits, checkRateLimit } from '@/lib/rateLimit'
 
 vi.mock('@trigger.dev/sdk/v3', () => ({
   tasks: { trigger: vi.fn() },
@@ -34,6 +35,7 @@ const run = (over: Record<string, unknown>) =>
 describe('GET /api/scan/[runId]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetAllRateLimits()
     closeDb()
   })
 
@@ -110,5 +112,40 @@ describe('GET /api/scan/[runId]', () => {
     expect(b.scanId).toBe(a.scanId)
     const count = getDb().prepare('SELECT COUNT(*) AS n FROM scans WHERE run_id = ?').get(RUN) as { n: number }
     expect(count.n).toBe(1)
+  })
+
+  describe('poll rate limit', () => {
+    const callFrom = (ip: string) =>
+      GET(new Request(`http://localhost/api/scan/${RUN}`, { headers: { 'x-forwarded-for': ip } }), {
+        params: Promise.resolve({ runId: RUN }),
+      })
+
+    it('lets a normal 2s poll for 5 minutes through (150 requests)', async () => {
+      vi.useFakeTimers()
+      run({ status: 'EXECUTING' })
+      let limited = 0
+      for (let i = 0; i < 150; i++) {
+        if ((await callFrom('10.9.0.1')).status === 429) limited++
+        vi.advanceTimersByTime(2000)
+      }
+      vi.useRealTimers()
+      expect(limited).toBe(0)
+    })
+
+    it('returns 429 with Retry-After on a runaway poller, without calling Trigger.dev', async () => {
+      run({ status: 'EXECUTING' })
+      let res = await callFrom('10.9.0.2')
+      for (let i = 0; i < 200 && res.status !== 429; i++) res = await callFrom('10.9.0.2')
+      expect(res.status).toBe(429)
+      expect(res.headers.get('Retry-After')).toBeTruthy()
+      expect(res.headers.get('X-RateLimit-Limit')).toBe('120')
+      expect(mockRetrieve.mock.calls.length).toBeLessThanOrEqual(121)
+    })
+
+    it('does not spend the scan-submit budget', async () => {
+      run({ status: 'EXECUTING' })
+      for (let i = 0; i < 50; i++) await callFrom('10.9.0.3')
+      expect(checkRateLimit('10.9.0.3').remaining).toBe(9)
+    })
   })
 })

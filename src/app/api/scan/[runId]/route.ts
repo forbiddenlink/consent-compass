@@ -6,6 +6,7 @@ import {
   mapRunError,
   QUEUE_BUSY_RESPONSE,
 } from "@/lib/scan-runs";
+import { checkPollGate } from "@/lib/scanGate";
 import { DbInitError, initDb, saveScanForRun } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -17,9 +18,12 @@ export const runtime = "nodejs";
  *   4xx/5xx {status:"error"|"timeout", error, code}
  */
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ runId: string }> },
 ) {
+  const gate = checkPollGate(req);
+  if (!gate.ok) return gate.response;
+
   const { runId } = await params;
   if (!RUN_ID_RE.test(runId)) {
     return NextResponse.json(
