@@ -1,19 +1,20 @@
-import { task, schedules } from "@trigger.dev/sdk/v3";
+import { task, queue } from "@trigger.dev/sdk/v3";
+import { scanUrl as runScan } from "@/lib/scan";
+import { SCAN_TASK_ID, SCAN_QUEUE_NAME } from "./ids";
 
-// Daily compliance re-scan
-export const dailyComplianceScan = schedules.task({
-  id: "daily-compliance-scan",
-  cron: "0 6 * * *",
-  run: async () => {
-    console.log("Running daily compliance re-scan");
-    // TODO: Trigger re-scans for watched URLs
-  },
-});
+// IMPORTANT: this file runs on the Trigger.dev worker, which must not hold the
+// app's secrets. Keep its import graph to src/lib/scan and its pure helpers.
+// Never import src/env.ts, db, resend, langfuse or arcjet here.
+
+const scanQueue = queue({ name: SCAN_QUEUE_NAME, concurrencyLimit: 2 });
 
 export const scanUrl = task({
-  id: "scan-url-compliance",
-  retry: { maxAttempts: 2 },
-  run: async (payload: { url: string; reportId: string }) => {
-    console.log(`Scanning URL for compliance: ${payload.url}`);
+  id: SCAN_TASK_ID,
+  queue: scanQueue,
+  machine: "medium-1x",
+  maxDuration: 300,
+  retry: { maxAttempts: 1 },
+  run: async (payload: { url: string }) => {
+    return runScan(payload.url);
   },
 });
