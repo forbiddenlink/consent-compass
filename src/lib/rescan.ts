@@ -1,2 +1,145 @@
-aW1wb3J0IHsgdHJpZ2dlclNjYW4sIHdhaXRGb3JTY2FuIH0gZnJvbSAiQC9saWIvc2Nhbi1ydW5zIjsKaW1wb3J0IHR5cGUgeyBTY2FuUmVzdWx0IH0gZnJvbSAiQC9saWIvdHlwZXMiOwppbXBvcnQgeyBpbml0RGIsIHNhdmVTY2FuRm9yUnVuLCBnZXREb21haW5zRm9yUmVzY2FuLCBnZXREb21haW5MYXRlc3RTY2FuIH0gZnJvbSAiQC9saWIvZGIiOwppbXBvcnQgdHlwZSB7IERvbWFpbkZvclJlc2NhbiB9IGZyb20gIkAvbGliL2RiIjsKCi8qKgogKiBSZXN1bHQgb2YgYSBzaW5nbGUgZG9tYWluIHJlLXNjYW4uCiAqLwpleHBvcnQgdHlwZSBSZXNjYW5SZXN1bHQgPSB7CiAgZG9tYWluOiBzdHJpbmc7CiAgdXJsOiBzdHJpbmc7CiAgc2NhbklkOiBudW1iZXI7CiAgcHJldmlvdXNTY2FuSWQ6IG51bWJlcjsKICBwcmV2aW91c1Njb3JlOiBudW1iZXIgfCBudWxsOwogIG5ld1Njb3JlOiBudW1iZXI7CiAgcmVncmVzc2lvbjogYm9vbGVhbjsKICByZWdyZXNzaW9uQW1vdW50PzogbnVtYmVyOwp9OwoKLyoqCiAqIFJlZ3Jlc3Npb24gdGhyZXNob2xkOiBmbGFnIGlmIHNjb3JlIGRyb3BzIGJ5IHRoaXMgbWFueSBwb2ludHMgb3IgbW9yZS4KICovCmNvbnN0IFJFR1JFU1NJT05fVEhSRVNIT0xEID0gMTA7CgovKioKICogQ2hlY2sgaWYgdGhlcmUncyBhIHJlZ3Jlc3Npb24gYmV0d2VlbiBzY29yZXMuCiAqIFJlZ3Jlc3Npb24gaXMgZGVmaW5lZCBhcyBzY29yZSBkcm9wcGluZyBieSBSRUdSRVNTSU9OX1RIUkVTSE9MRCBvciBtb3JlIHBvaW50cy4KICovCmV4cG9ydCBmdW5jdGlvbiBkZXRlY3RSZWdyZXNzaW9uKAogIHByZXZpb3VzU2NvcmU6IG51bWJlciB8IG51bGwsCiAgbmV3U2NvcmU6IG51bWJlcgopOiB7IHJlZ3Jlc3Npb246IGJvb2xlYW47IHJlZ3Jlc3Npb25BbW91bnQ/OiBudW1iZXIgfSB7CiAgaWYgKHByZXZpb3VzU2NvcmUgPT09IG51bGwpIHsKICAgIHJldHVybiB7IHJl
-dHVybiB7IHJlZ3Jlc3Npb246IGZhbHNlIH07CiAgfQoKICBjb25zdCBkaWZmZXJlbmNlID0gcHJldmlvdXNTY29yZSAtIG5ld1Njb3JlOwogIGlmIChkaWZmZXJlbmNlID49IFJFR1JFU1NJT05fVEhSRVNIT0xEKSB7CiAgICByZXR1cm4geyByZWdyZXNzaW9uOiB0cnVlLCByZWdyZXNzaW9uQW1vdW50OiBkaWZmZXJlbmNlIH07CiAgfQoKICByZXR1cm4geyByZWdyZXNzaW9uOiBmYWxzZSB9Owp9CgovKioKICogUmUtc2NhbiBhIHNpbmdsZSBkb21haW4uCiAqIFVzZXMgdGhlIFVSTCBmcm9tIHRoZSBtb3N0IHJlY2VudCBzY2FuIG9mIHRoYXQuCiAqLwpleHBvcnQgYXN5bmMgZnVuY3Rpb24gcmVzY2FuRG9tYWluKGRvbWFpbjogc3RyaW5nKTogUHJvbWlzZTxSZXNjYW5SZXN1bHQgfCBudWxsPiB7CiAgaW5pdERiKCk7CgogIC8vIEdldCB0aGUgbGF0ZXN0IHNjYW4gZm9yIHRoaXMgZG9tYWluCiAgY29uc3QgbGF0ZXN0U2NhbiA9IGdldERvbWFpbkxhdGVzdFNjYW4oZG9tYWluKTsKICBpZiAoIWxhdGVzdFNjYW4pIHsKICAgIHJldHVybiBudWxsOwogIH0KCiAgY29uc3QgW3Jlc3VsdF0gPSBhd2FpdCByZXNjYW5Gcm9tSW5mb3MoW2xhdGVzdFNjYW5dKTsKICBpZiAoIXJlc3VsdCkgdGhyb3cgbmV3IEVycm9yKGBSZS1zY2FuIG9mICR7ZG9tYWlufSBkaWQgbm90IGNvbXBsZXRlYCk7CiAgcmV0dXJuIHJlc3VsdDsKfQoKLyoqIFdhaXQgYnVkZ2V0IGZvciBzY2FucyBzdGFydGVkIGZyb20gb25lIHJlcXVlc3QgKHRoZSByb3V0ZSBhbGxvd3MgMzAwcykuICovCmNvbnN0IFJFU0NBTl9XQUlUX01TID0gMjcwXzAwMDsKCi8qKgogKiBUdXJuIGEgZmluaXNoZWQgc2NhbiBpbnRvIGEgUmVzY2FuUmVzdWx0IGFuZCBzYXZlIGl0LiBTYXZlZCBvbmNlIHBlciBydW4gaWQsCiAqIHNvIHJldHJ5aW5nIGEgcmVxdWVzdCBuZXZlciBkdXBsaWNhdGVzIHJvd3MuCiAqLwpmdW5jdGlvbiByZWNvcmRSZXNjYW4oCiAgZG9tYWluSW5mbzogRG9tYWluRm9yUmVzY2FuLAogIHJ1bklkOiBzdHJpbmcsCiAgcmVzdWx0OiBTY2FuUmVzdWx0Cik6IFJlc2NhblJlc3VsdCB7CiAgY29uc3Qgc2NhbklkID0gc2F2ZVNjYW5Gb3JSdW4ocnVuSWQsIHJlc3VsdCk7CiAgY29uc3QgbmV3U2NvcmUgPSByZXN1bHQuc3RhdHVzID09PSAib2siID8gcmVzdWx0LnNjb3JlLm92ZXJhbGwgOiAwOwogIGNvbnN0IHJlZ3Jlc3Npb25DaGVjayA9IGRldGVjdFJlZ3Jlc3Npb24oZG9tYWluSW5mby5sYXN0U2NvcmUsIG5ld1Njb3JlKTsKCiAgcmV0dXJuIHsKICAgIGRvbWFpbjogZG9tYWluSW5mby5kb21haW4sCiAgICB1cmw6IGRvbWFpbkluZm8udXJsLAogICAgc2NhbklkLAogICAgcHJldmlvdXNTY2FuSWQ6IGRvbWFpbkluZm8ubGFzdFNjYW5JZCwKICAgIHByZXZpb3VzU2NvcmU6IGRvbWFpbkluZm8ubGFzdFNjb3JlLAogICAgbmV3U2NvcmUsCiAgICByZWdyZXNzaW9uOiByZWdyZXNzaW9uQ2hlY2sucmVncmVzc2lvbiwKICAgIHJlZ3Jlc3Npb25BbW91bnQ6IHJlZ3Jlc3Npb25DaGVjay5yZWdyZXNzaW9uQW1vdW50LAogIH07Cn0KCi8qKgogKiBSZS1zY2FuIGRvbWFpbnMgb24gVHJpZ2dlci5kZXYuIEFsbCBydW5zIGFyZSB0cmlnZ2VyZWQgZmlyc3QgKHRoZSB0YXNrIHF1ZXVlCiAqIGxpbWl0cyBob3cgbWFueSBleGVjdXRlIGF0IG9uY2UpLCB0aGVuIHBvbGxlZCB1bnRpbCBhIHNoYXJlZCBkZWFkbGluZS4KICogRG9tYWlucyB3aG9zZSBydW4gaGFzIG5vdCBmaW5pc2hlZCBieSB0aGVuIGFyZSBza2lwcGVkIGFuZCBsb2dnZWQuCiAqLwphc3luYyBmdW5jdGlvbiByZXNjYW5Gcm9tSW5mb3MoaW5mb3M6IERvbWFpbkZvclJlc2NhbltdKTogUHJvbWlzZTxSZXNjYW5SZXN1bHRbXT4gewogIGNvbnN0IHN0YXJ0ZWQgPSBhd2FpdCBQcm9taXNlLmFsbCgKICAgIGluZm9zLm1hcChhc3luYyAoaW5mbykgPT4gewogICAgICB0cnkgewogICAgICAgIHJldHVybiB7IGluZm8sIHJ1bklkOiBhd2FpdCB0cmlnZ2VyU2NhbihpbmZvLnVybCkgfTsKICAgICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgICAgY29uc29sZS5lcnJvcigiW1Jlc2NhbiBFcnJvcl0gRmFpbGVkIHRvIHN0YXJ0IHNjYW4gZm9yICVzOiIsIGluZm8uZG9tYWluLCBlcnIpOwogICAgICAgIHJldHVybiBudWxsOwogICAgICB9CiAgICB9KQogICk7CgogIGNvbnN0IGRlYWRsaW5lID0gRGF0ZS5ub3coKSArIFJFU0NBTl9XQUlUX01TOwogIGNvbnN0IHJlc3VsdHM6IFJlc2NhblJlc3VsdFtdID0gW107CgogIGF3YWl0IFByb21pc2UuYWxsKAogICAgc3RhcnRlZC5tYXAoYXN5bmMgKGVudHJ5KSA9PiB7CiAgICAgIGlmICghZW50cnkpIHJldHVybjsKICAgICAgdHJ5IHsKICAgICAgICBjb25zdCBydW4gPSBhd2FpdCB3YWl0Rm9yU2NhbihlbnRyeS5ydW5JZCwgewogICAgICAgICAgdGltZW91dE1zOiBNYXRoLm1heCgwLCBkZWFkbGluZSAtIERhdGUubm93KCkpLAogICAgICAgIH0pOwogICAgICAgIGlmIChydW4uc3RhdGUgPT09ICJvayIpIHsKICAgICAgICAgIHJlc3VsdHMucHVzaChyZWNvcmRSZXNjYW4oZW50cnkuaW5mbywgZW50cnkucnVuSWQsIHJ1bi5yZXN1bHQpKTsKICAgICAgICB9IGVsc2UgewogICAgICAgICAgY29uc3Qgc3RhdHVzTWVzc2FnZSA9CiAgICAgICAgICAgIHJ1bi5zdGF0ZSA9PT0gImVycm9yIgogICAgICAgICAgICAgID8gYGZhaWxlZDogJHtydW4ubWVzc2FnZX1gCiAgICAgICAgICAgICAgOiBydW4uc3RhdGUgPT09ICJleHBpcmVkIgogICAgICAgICAgICAgICAgPyAiZXhwaXJlZCBpbiB0aGUgcXVldWUiCiAgICAgICAgICAgICAgICA6ICJkaWQgbm90IGZpbmlzaCBpbiB0aW1lIjsKICAgICAgICAgIGNvbnNvbGUuZXJyb3IoIltSZXNjYW4gRXJvcl0gU2NhbiBmb3IgJXMgJXMiLCBlbnRyeS5pbmZvLmRvbWFpbiwgc3RhdHVzTWVzc2FnZSk7CiAgICAgICAgfQogICAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgICBjb25zb2xlLmVycm9yKCJbUmVzY2FuIEVycm9yXSBGYWlsZWQgdG8gcmVzY2FuICVzOiIsIGVudHJ5LmluZm8uZG9tYWluLCBlcnIpOwogICAgICB9CiAgICB9KQogICk7CgogIHJldHVybiByZXN1bHRzOwp9Cg==
+import { triggerScan, waitForScan } from "@/lib/scan-runs";
+import type { ScanResult } from "@/lib/types";
+import { initDb, saveScanForRun, getDomainsForRescan, getDomainLatestScan } from "@/lib/db";
+import type { DomainForRescan } from "@/lib/db";
+
+/**
+ * Result of a single domain re-scan.
+ */
+export type RescanResult = {
+  domain: string;
+  url: string;
+  scanId: number;
+  previousScanId: number;
+  previousScore: number | null;
+  newScore: number;
+  regression: boolean;
+  regressionAmount?: number;
+};
+
+/**
+ * Regression threshold: flag if score drops by this many points or more.
+ */
+const REGRESSION_THRESHOLD = 10;
+
+/**
+ * Check if there's a regression between scores.
+ * Regression is defined as score dropping by REGRESSION_THRESHOLD or more points.
+ */
+export function detectRegression(
+  previousScore: number | null,
+  newScore: number
+): { regression: boolean; regressionAmount?: number } {
+  if (previousScore === null) {
+    return { regression: false };
+  }
+
+  const difference = previousScore - newScore;
+  if (difference >= REGRESSION_THRESHOLD) {
+    return { regression: true, regressionAmount: difference };
+  }
+
+  return { regression: false };
+}
+
+/**
+ * Re-scan a single domain.
+ * Uses the URL from the most recent scan of that domain.
+ */
+export async function rescanDomain(domain: string): Promise<RescanResult | null> {
+  initDb();
+
+  // Get the latest scan for this domain
+  const latestScan = getDomainLatestScan(domain);
+  if (!latestScan) {
+    return null;
+  }
+
+  const [result] = await rescanFromInfos([latestScan]);
+  if (!result) throw new Error(`Re-scan of ${domain} did not complete`);
+  return result;
+}
+
+/** Wait budget for scans started from one request (the route allows 300s). */
+const RESCAN_WAIT_MS = 270_000;
+
+/**
+ * Turn a finished scan into a RescanResult and save it. Saved once per run id,
+ * so retrying a request never duplicates rows.
+ */
+function recordRescan(
+  domainInfo: DomainForRescan,
+  runId: string,
+  result: ScanResult
+): RescanResult {
+  const scanId = saveScanForRun(runId, result);
+  const newScore = result.status === "ok" ? result.score.overall : 0;
+  const regressionCheck = detectRegression(domainInfo.lastScore, newScore);
+
+  return {
+    domain: domainInfo.domain,
+    url: domainInfo.url,
+    scanId,
+    previousScanId: domainInfo.lastScanId,
+    previousScore: domainInfo.lastScore,
+    newScore,
+    regression: regressionCheck.regression,
+    regressionAmount: regressionCheck.regressionAmount,
+  };
+}
+
+/**
+ * Re-scan domains on Trigger.dev. All runs are triggered first (the task queue
+ * limits how many execute at once), then polled until a shared deadline.
+ * Domains whose run has not finished by then are skipped and logged.
+ */
+async function rescanFromInfos(infos: DomainForRescan[]): Promise<RescanResult[]> {
+  const started = await Promise.all(
+    infos.map(async (info) => {
+      try {
+        return { info, runId: await triggerScan(info.url) };
+      } catch (err) {
+        console.error("[Rescan Error] Failed to start scan for %s:", info.domain, err);
+        return null;
+      }
+    })
+  );
+
+  const deadline = Date.now() + RESCAN_WAIT_MS;
+  const results: RescanResult[] = [];
+
+  await Promise.all(
+    started.map(async (entry) => {
+      if (!entry) return;
+      try {
+        const run = await waitForScan(entry.runId, {
+          timeoutMs: Math.max(0, deadline - Date.now()),
+        });
+        if (run.state === "ok") {
+          results.push(recordRescan(entry.info, entry.runId, run.result));
+        } else {
+          const statusMessage =
+            run.state === "error"
+              ? `failed: ${run.message}`
+              : run.state === "expired"
+                ? "expired in the queue"
+                : "did not finish in time";
+          console.error("[Rescan Error] Scan for %s %s", entry.info.domain, statusMessage);
+        }
+      } catch (err) {
+        console.error("[Rescan Error] Failed to rescan %s:", entry.info.domain, err);
+      }
+    })
+  );
+
+  return results;
+}
+
+/**
+ * Re-scan multiple domains.
+ * Domains are selected by oldest scan first.
+ */
+export async function rescanDomains(limit: number = 10): Promise<RescanResult[]> {
+  initDb();
+  return rescanFromInfos(getDomainsForRescan(limit));
+}
