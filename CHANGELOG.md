@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/forbiddenlink/consent-compass/compare/v1.1.3...v1.2.0) (2026-11-20)
+
+
+### Features
+
+* **scan:** run headless scans on Trigger.dev, not in Vercel functions ([#149](https://github.com/forbiddenlink/consent-compass/issues/149)) ([9107e67](https://github.com/forbiddenlink/consent-compass/commit/9107e67022bd42f19bb55127219aa03a4d50e3ca))
+
+
+### Reverts
+
+* restore scanning until Trigger accepts production deploys ([#151](https://github.com/forbiddenlink/consent-compass/issues/151)) ([a2d4a4d](https://github.com/forbiddenlink/consent-compass/commit/a2d4a4d8de2bb61be65fc8f31a96b6ad0018d50d))
+
 ## [1.1.3](https://github.com/forbiddenlink/consent-compass/compare/v1.1.2...v1.1.3) (2026-11-17)
 
 
