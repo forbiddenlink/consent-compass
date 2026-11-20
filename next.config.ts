@@ -7,6 +7,13 @@ const withBundleAnalyzer = withBundleAnalyzerInit({ enabled: process.env.ANALYZE
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Playwright resolves browsers.json dynamically, so Next's tracer cannot discover it.
+  // Keep the runtime package only with the scan route that imports Playwright.
+  outputFileTracingIncludes: {
+    "/api/scan": [
+      "./node_modules/.pnpm/playwright-core@*/node_modules/playwright-core/**",
+    ],
+  },
   async headers() {
     return [
       {

@@ -56,7 +56,6 @@
     "@tailwindcss/postcss": "4.3.5",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
-    "@trigger.dev/build": "4.8.5",
     "@types/better-sqlite3": "9.6.0",
     "@types/node": "26.6.6",
     "@types/node-cron": "3.0.11",
