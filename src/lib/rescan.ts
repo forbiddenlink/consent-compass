@@ -103,7 +103,7 @@ export async function rescanDomains(limit: number = 10): Promise<RescanResult[]>
       results.push(result);
     } catch (err) {
       // Log error but continue with other domains
-      console.error(`[Rescan Error] Failed to rescan ${domainInfo.domain}:`, err);
+      console.error("[Rescan Error] Failed to rescan %s:", domainInfo.domain, err);
     }
   }
 
