@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ScanResult } from "@/lib/types";
+import { scanViaApi } from "@/lib/scan-client";
 import {
   ScanForm,
   ScanResults,
@@ -32,15 +33,7 @@ export default function Home() {
     setResult(null);
 
     try {
-      const res = await fetch("/api/scan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error ?? "Scan failed");
-      setResult(json as ScanResult);
+      setResult(await scanViaApi<ScanResult>(url));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
     } finally {

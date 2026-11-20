@@ -31,6 +31,30 @@
           }
         },
         "responses": {
+          "202": {
+            "description": "Scan accepted. Poll GET /api/scan/{runId} for the result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "runId": { "type": "string", "example": "run_abc123xyz" } }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid URL" },
+          "429": { "description": "Rate limited" },
+          "500": { "description": "Scan failed" }
+        }
+      }
+    },
+    "/api/scan/{runId}": {
+      "get": {
+        "summary": "Poll a scan run",
+        "parameters": [
+          { "name": "runId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
           "200": {
             "description": "Scan completed",
             "content": {
@@ -39,9 +63,11 @@
               }
             }
           },
-          "400": { "description": "Invalid URL" },
-          "429": { "description": "Rate limited" },
-          "500": { "description": "Scan failed" }
+          "202": { "description": "Still queued or running" },
+          "400": { "description": "Invalid run id, or the scan target could not be reached" },
+          "404": { "description": "Run not found, or not a scan run" },
+          "500": { "description": "Scan failed" },
+          "504": { "description": "Scan timed out" }
         }
       }
     },
@@ -52,8 +78,14 @@
           {
             "name": "url",
             "in": "query",
-            "required": true,
+            "description": "URL to scan. Triggers a new scan and waits for it. Provide url or runId.",
             "schema": { "type": "string", "format": "uri" }
+          },
+          {
+            "name": "runId",
+            "in": "query",
+            "description": "Run id from POST /api/scan. Renders the finished run with no new scan. Provide url or runId.",
+            "schema": { "type": "string" }
           },
           {
             "name": "format",
@@ -74,8 +106,12 @@
               "text/csv": {}
             }
           },
-          "400": { "description": "Invalid URL or format" },
-          "500": { "description": "Report generation failed" }
+          "202": { "description": "Scan still running. Retry with the returned runId." },
+          "400": { "description": "Invalid URL, runId or format" },
+          "404": { "description": "Run not found" },
+          "429": { "description": "Rate limited or domain cooldown" },
+          "500": { "description": "Report generation failed" },
+          "503": { "description": "Server busy" }
         }
       }
     },
@@ -108,6 +144,7 @@
             }
           },
           "401": { "description": "Unauthorized - API key required" },
+          "503": { "description": "RESCAN_API_KEY is not configured (production)" },
           "404": { "description": "Domain not found (when specific domain requested)" },
           "500": { "description": "Re-scan failed" }
         }

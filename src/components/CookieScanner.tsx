@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CookieScanResult } from "@/lib/cookies/scanner";
+import { scanViaApi } from "@/lib/scan-client";
 import { CookieTable } from "./CookieTable";
 import { ComplianceReport } from "./ComplianceReport";
 
@@ -29,18 +30,11 @@ export function CookieScanner({ initialUrl, onScanComplete }: CookieScannerProps
     setError(null);
 
     try {
-      const response = await fetch("/api/scan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error ?? "Scan failed");
-      }
-
-      const scanData = await response.json();
+      const scanData = await scanViaApi<{
+        scannedAt?: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        preConsent?: any;
+      }>(url);
 
       // Extract cookies from scan result and create CookieScanResult
       if (scanData.preConsent?.cookies) {

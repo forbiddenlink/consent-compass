@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { POST } from './route'
 import { resetAllRateLimits } from '@/lib/rateLimit'
 
-// Mock the scan module
 // Keep route tests offline: DNS resolution is covered in ssrf.test.ts.
 vi.mock('@/lib/ssrf', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/ssrf')>()
@@ -13,284 +12,128 @@ vi.mock('@/lib/ssrf', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/scan', () => ({
-  scanUrl: vi.fn(),
+vi.mock('@trigger.dev/sdk/v3', () => ({
+  tasks: { trigger: vi.fn() },
+  runs: { retrieve: vi.fn() },
 }))
+// The browser must never be loaded by this route.
+vi.mock('@/lib/scan', () => {
+  throw new Error('/api/scan must not import the scanner')
+})
 
-import { scanUrl } from '@/lib/scan'
-
-const mockScanUrl = vi.mocked(scanUrl)
+import { tasks } from '@trigger.dev/sdk/v3'
+const mockTrigger = vi.mocked(tasks.trigger)
 
 function createRequest(body: unknown, headers: Record<string, string> = {}): Request {
   return new Request('http://localhost:3000/api/scan', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify(body),
   })
-}
-
-function createMockScanResult() {
-  return {
-    status: 'ok' as const,
-    url: 'https://example.com/',
-    scannedAt: new Date().toISOString(),
-    score: {
-      overall: 75,
-      choiceSymmetry: 80,
-      preConsentSignals: 70,
-      accessibility: 75,
-      transparency: 75,
-    },
-    banner: {
-      detected: true,
-      confidence: 0.9,
-      selectors: ['#cookie-banner'],
-      acceptButtons: ['Accept'],
-      rejectButtons: ['Reject'],
-      managePrefsButtons: [],
-    },
-    friction: {
-      acceptClicks: 1,
-      rejectClicks: 1,
-    },
-    preConsent: {
-      cookies: [],
-      requests: [],
-    },
-    artifacts: {},
-    findings: [],
-    meta: {
-      userAgent: 'test',
-      tookMs: 1000,
-      scannerVersion: '0.1.0',
-    },
-  }
 }
 
 describe('POST /api/scan', () => {
   beforeEach(() => {
     resetAllRateLimits()
     vi.clearAllMocks()
-    mockScanUrl.mockResolvedValue(createMockScanResult())
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
+    mockTrigger.mockResolvedValue({ id: 'run_abc12345xyz' } as never)
   })
 
   describe('request validation', () => {
     it('returns 400 for missing URL', async () => {
-      const req = createRequest({})
-      const res = await POST(req)
-      const json = await res.json()
-
+      const res = await POST(createRequest({}))
       expect(res.status).toBe(400)
-      expect(json.code).toBe('VALIDATION_ERROR')
+      expect((await res.json()).code).toBe('VALIDATION_ERROR')
     })
 
     it('returns 400 for empty URL', async () => {
-      const req = createRequest({ url: '' })
-      const res = await POST(req)
-      const json = await res.json()
-
+      const res = await POST(createRequest({ url: '' }))
       expect(res.status).toBe(400)
-      expect(json.code).toBe('VALIDATION_ERROR')
+      expect((await res.json()).code).toBe('VALIDATION_ERROR')
     })
 
     it('returns 400 for invalid URL format', async () => {
-      const req = createRequest({ url: 'not a url' })
-      const res = await POST(req)
-      const json = await res.json()
-
+      const res = await POST(createRequest({ url: 'not a url' }))
       expect(res.status).toBe(400)
-      expect(json.code).toBe('INVALID_URL')
+      expect((await res.json()).code).toBe('INVALID_URL')
     })
 
-    it('returns 400 for localhost', async () => {
-      const req = createRequest({ url: 'http://localhost:3000' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(400)
-      expect(json.code).toBe('INVALID_URL')
-      expect(json.error).toContain('private')
-    })
-
-    it('returns 400 for private IPs', async () => {
-      const req = createRequest({ url: 'http://192.168.1.1' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(400)
-      expect(json.code).toBe('INVALID_URL')
+    it('returns 400 for localhost and private IPs', async () => {
+      for (const url of ['http://localhost:3000', 'http://192.168.1.1']) {
+        const res = await POST(createRequest({ url }))
+        expect(res.status).toBe(400)
+        expect((await res.json()).code).toBe('INVALID_URL')
+      }
+      expect(mockTrigger).not.toHaveBeenCalled()
     })
 
     it('returns 400 for invalid timeout option', async () => {
-      const req = createRequest({ url: 'https://example.com', options: { timeout: 1000 } })
-      const res = await POST(req)
-      const json = await res.json()
-
+      const res = await POST(createRequest({ url: 'https://example.com', options: { timeout: 1000 } }))
       expect(res.status).toBe(400)
-      expect(json.code).toBe('VALIDATION_ERROR')
+      expect((await res.json()).code).toBe('VALIDATION_ERROR')
     })
   })
 
-  describe('successful scans', () => {
-    it('returns scan result for valid URL', async () => {
-      const req = createRequest({ url: 'https://example.com' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(200)
-      expect(json.status).toBe('ok')
-      expect(json.score).toBeDefined()
-      expect(mockScanUrl).toHaveBeenCalledWith('https://example.com/')
-    })
-
-    it('normalizes HTTP to HTTPS', async () => {
-      const req = createRequest({ url: 'http://example.com' })
-      await POST(req)
-
-      expect(mockScanUrl).toHaveBeenCalledWith('https://example.com/')
+  describe('submit', () => {
+    it('returns 202 with the run id and triggers the task with the normalized URL', async () => {
+      const res = await POST(createRequest({ url: 'http://example.com' }))
+      expect(res.status).toBe(202)
+      expect(await res.json()).toEqual({ runId: 'run_abc12345xyz' })
+      expect(mockTrigger).toHaveBeenCalledWith('scan-url-compliance', { url: 'https://example.com/' }, { ttl: '10m' })
     })
 
     it('adds https:// if protocol missing', async () => {
-      const req = createRequest({ url: 'example.com' })
-      await POST(req)
-
-      expect(mockScanUrl).toHaveBeenCalledWith('https://example.com/')
+      await POST(createRequest({ url: 'example.com' }))
+      expect(mockTrigger).toHaveBeenCalledWith('scan-url-compliance', { url: 'https://example.com/' }, { ttl: '10m' })
     })
 
     it('includes rate limit headers', async () => {
-      const req = createRequest({ url: 'https://example.com' })
-      const res = await POST(req)
-
+      const res = await POST(createRequest({ url: 'https://example.com' }))
       expect(res.headers.get('X-RateLimit-Limit')).toBeDefined()
       expect(res.headers.get('X-RateLimit-Remaining')).toBeDefined()
+    })
+
+    it('returns 500 when Trigger.dev is unreachable', async () => {
+      mockTrigger.mockRejectedValue(new Error('network'))
+      const res = await POST(createRequest({ url: 'https://example.com' }))
+      expect(res.status).toBe(500)
+      expect((await res.json()).code).toBe('INTERNAL_ERROR')
     })
   })
 
   describe('rate limiting', () => {
     it('returns 429 when rate limit exceeded', async () => {
-      // Exhaust rate limit (default is 10 tokens)
       for (let i = 0; i < 10; i++) {
-        const req = createRequest({ url: `https://example${i}.com` })
-        await POST(req)
+        await POST(createRequest({ url: `https://example${i}.com` }))
       }
-
-      // 11th request should be rate limited
-      const req = createRequest({ url: 'https://example11.com' })
-      const res = await POST(req)
-      const json = await res.json()
-
+      const res = await POST(createRequest({ url: 'https://example11.com' }))
       expect(res.status).toBe(429)
-      expect(json.code).toBe('RATE_LIMITED')
-      expect(json.retryAfter).toBeDefined()
+      expect((await res.json()).code).toBe('RATE_LIMITED')
       expect(res.headers.get('Retry-After')).toBeDefined()
     })
 
     it('respects x-forwarded-for header for client ID', async () => {
-      // First client exhausts their limit
       for (let i = 0; i < 10; i++) {
-        const req = createRequest(
-          { url: `https://example${i}.com` },
-          { 'x-forwarded-for': '1.2.3.4' }
-        )
-        await POST(req)
+        await POST(createRequest({ url: `https://example${i}.com` }, { 'x-forwarded-for': '1.2.3.4' }))
       }
-
-      // Same IP should be rate limited
-      const req1 = createRequest(
-        { url: 'https://newsite.com' },
-        { 'x-forwarded-for': '1.2.3.4' }
-      )
-      const res1 = await POST(req1)
-      expect(res1.status).toBe(429)
-
-      // Different IP should not be rate limited
-      const req2 = createRequest(
-        { url: 'https://newsite.com' },
-        { 'x-forwarded-for': '5.6.7.8' }
-      )
-      const res2 = await POST(req2)
-      expect(res2.status).toBe(200)
+      const limited = await POST(createRequest({ url: 'https://newsite.com' }, { 'x-forwarded-for': '1.2.3.4' }))
+      expect(limited.status).toBe(429)
+      const other = await POST(createRequest({ url: 'https://newsite.com' }, { 'x-forwarded-for': '5.6.7.8' }))
+      expect(other.status).toBe(202)
     })
   })
 
   describe('domain cooldown', () => {
     it('returns 429 for same domain scanned recently', async () => {
-      // First scan
-      const req1 = createRequest({ url: 'https://example.com' })
-      const res1 = await POST(req1)
-      expect(res1.status).toBe(200)
-
-      // Second scan to same domain
-      const req2 = createRequest({ url: 'https://example.com/page2' })
-      const res2 = await POST(req2)
-      const json = await res2.json()
-
-      expect(res2.status).toBe(429)
-      expect(json.code).toBe('DOMAIN_COOLDOWN')
-      expect(json.retryAfter).toBeDefined()
+      expect((await POST(createRequest({ url: 'https://example.com' }))).status).toBe(202)
+      const res = await POST(createRequest({ url: 'https://example.com/page2' }))
+      expect(res.status).toBe(429)
+      expect((await res.json()).code).toBe('DOMAIN_COOLDOWN')
     })
 
     it('allows scans to different domains', async () => {
-      const req1 = createRequest({ url: 'https://example.com' })
-      await POST(req1)
-
-      const req2 = createRequest({ url: 'https://different.com' })
-      const res2 = await POST(req2)
-
-      expect(res2.status).toBe(200)
-    })
-  })
-
-  describe('error handling', () => {
-    it('returns 504 for timeout errors', async () => {
-      mockScanUrl.mockRejectedValue(new Error('Timeout exceeded'))
-
-      const req = createRequest({ url: 'https://slow-site.com' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(504)
-      expect(json.code).toBe('TIMEOUT')
-    })
-
-    it('returns 400 for DNS errors', async () => {
-      mockScanUrl.mockRejectedValue(new Error('net::ERR_NAME_NOT_RESOLVED'))
-
-      const req = createRequest({ url: 'https://nonexistent-domain.invalid' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(400)
-      expect(json.code).toBe('DNS_ERROR')
-    })
-
-    it('returns 502 for connection refused', async () => {
-      mockScanUrl.mockRejectedValue(new Error('net::ERR_CONNECTION_REFUSED'))
-
-      const req = createRequest({ url: 'https://closed-port.com' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(502)
-      expect(json.code).toBe('CONNECTION_REFUSED')
-    })
-
-    it('returns 500 for unknown errors', async () => {
-      mockScanUrl.mockRejectedValue(new Error('Something unexpected'))
-
-      const req = createRequest({ url: 'https://error-site.com' })
-      const res = await POST(req)
-      const json = await res.json()
-
-      expect(res.status).toBe(500)
-      expect(json.code).toBe('INTERNAL_ERROR')
+      await POST(createRequest({ url: 'https://example.com' }))
+      expect((await POST(createRequest({ url: 'https://different.com' }))).status).toBe(202)
     })
   })
 })

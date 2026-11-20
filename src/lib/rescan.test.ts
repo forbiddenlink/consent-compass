@@ -297,3 +297,18 @@ describe("getDomainLatestScan", () => {
     });
   });
 });
+
+describe("saveScanForRun", () => {
+  it("is idempotent per run id", async () => {
+    const { saveScanForRun } = await import("./db");
+    const db = initDb(":memory:");
+    const a = saveScanForRun("run_dup12345", createMockScanResult(), db);
+    const b = saveScanForRun("run_dup12345", createMockScanResult(), db);
+    const c = saveScanForRun("run_other123", createMockScanResult(), db);
+    expect(b).toBe(a);
+    expect(c).not.toBe(a);
+    const n = db.prepare("SELECT COUNT(*) AS n FROM scans").get() as { n: number };
+    expect(n.n).toBe(2);
+    db.close();
+  });
+});

@@ -81,6 +81,16 @@ export function initDb(dbPath?: string): Database.Database {
     CREATE INDEX IF NOT EXISTS idx_domain_date ON scans(domain, scanned_at DESC);
   `);
 
+  // Idempotency key for scans produced by a Trigger.dev run. Older databases
+  // predate this column, so add it in place.
+  const columns = database.pragma("table_info(scans)") as { name: string }[];
+  if (!columns.some((c) => c.name === "run_id")) {
+    database.exec("ALTER TABLE scans ADD COLUMN run_id TEXT");
+  }
+  database.exec(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_scans_run_id ON scans(run_id)",
+  );
+
   // Store as singleton if not using custom path
   if (!dbPath) {
     db = database;
@@ -161,6 +171,38 @@ export function saveScan(result: ScanResult, database?: Database.Database): numb
   );
 
   return info.lastInsertRowid as number;
+}
+
+/**
+ * Save the scan produced by a Trigger.dev run, once. Polling the same run
+ * again returns the existing row id instead of inserting a duplicate.
+ */
+export function saveScanForRun(
+  runId: string,
+  result: ScanResult,
+  database?: Database.Database
+): number {
+  const dbInstance = database ?? getDb();
+
+  const insert = dbInstance.prepare(`
+    INSERT INTO scans (url, domain, scanned_at, score, status, result, run_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(run_id) DO NOTHING
+  `);
+  insert.run(
+    result.url,
+    extractDomain(result.url),
+    result.scannedAt,
+    result.status === "ok" ? result.score.overall : null,
+    result.status,
+    JSON.stringify(result),
+    runId
+  );
+
+  const row = dbInstance
+    .prepare("SELECT id FROM scans WHERE run_id = ?")
+    .get(runId) as { id: number };
+  return row.id;
 }
 
 /**
