@@ -8,28 +8,28 @@ export const maxDuration = 300;
 
 /**
  * Validate the API key from Authorization header.
- * "unconfigured" means no key is set and this is a production deploy, where we
- * fail closed. Outside production a missing key allows access (development).
+ * Returns true if valid, false if missing or invalid.
  */
-function validateApiKey(req: Request): "ok" | "denied" | "unconfigured" {
+function validateApiKey(req: Request): boolean {
   const apiKey = process.env.RESCAN_API_KEY;
 
+  // If no API key is configured, allow access (for development)
   if (!apiKey) {
-    return process.env.VERCEL_ENV === "production" ? "unconfigured" : "ok";
+    return true;
   }
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) {
-    return "denied";
+    return false;
   }
 
   // Expected format: "Bearer <api-key>"
   const match = authHeader.match(/^Bearer\s+(.+)$/i);
   if (!match) {
-    return "denied";
+    return false;
   }
 
-  return match[1] === apiKey ? "ok" : "denied";
+  return match[1] === apiKey;
 }
 
 /**
@@ -42,7 +42,7 @@ function validateApiKey(req: Request): "ok" | "denied" | "unconfigured" {
  *   - domain: specific domain to rescan (optional)
  *
  * Headers:
- *   - Authorization: Bearer <RESCAN_API_KEY> (required; if RESCAN_API_KEY is unset, production returns 503)
+ *   - Authorization: Bearer <RESCAN_API_KEY> (required if RESCAN_API_KEY env var is set)
  *
  * Returns:
  * {
@@ -61,18 +61,7 @@ function validateApiKey(req: Request): "ok" | "denied" | "unconfigured" {
  */
 export async function POST(req: Request) {
   // Validate API key
-  const auth = validateApiKey(req);
-  if (auth === "unconfigured") {
-    return NextResponse.json(
-      {
-        status: "error",
-        error: "Re-scan is disabled: RESCAN_API_KEY is not configured.",
-        code: "NOT_CONFIGURED",
-      },
-      { status: 503 }
-    );
-  }
-  if (auth === "denied") {
+  if (!validateApiKey(req)) {
     return NextResponse.json(
       {
         status: "error",

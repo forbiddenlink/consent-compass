@@ -1,6 +1,5 @@
-import { triggerScan, waitForScan } from "@/lib/scan-runs";
-import type { ScanResult } from "@/lib/types";
-import { initDb, saveScanForRun, getDomainsForRescan, getDomainLatestScan } from "@/lib/db";
+import { scanUrl } from "@/lib/scan";
+import { initDb, saveScan, getDomainsForRescan, getDomainLatestScan } from "@/lib/db";
 import type { DomainForRescan } from "@/lib/db";
 
 /**
@@ -55,25 +54,23 @@ export async function rescanDomain(domain: string): Promise<RescanResult | null>
     return null;
   }
 
-  const [result] = await rescanFromInfos([latestScan]);
-  if (!result) throw new Error(`Re-scan of ${domain} did not complete`);
-  return result;
+  return rescanDomainFromInfo(latestScan);
 }
 
-/** Wait budget for scans started from one request (the route allows 300s). */
-const RESCAN_WAIT_MS = 270_000;
-
 /**
- * Turn a finished scan into a RescanResult and save it. Saved once per run id,
- * so retrying a request never duplicates rows.
+ * Re-scan a domain using existing scan info.
  */
-function recordRescan(
-  domainInfo: DomainForRescan,
-  runId: string,
-  result: ScanResult
-): RescanResult {
-  const scanId = saveScanForRun(runId, result);
+async function rescanDomainFromInfo(domainInfo: DomainForRescan): Promise<RescanResult> {
+  // Perform the scan
+  const result = await scanUrl(domainInfo.url);
+
+  // Save the new scan
+  const scanId = saveScan(result);
+
+  // Extract new score
   const newScore = result.status === "ok" ? result.score.overall : 0;
+
+  // Check for regression
   const regressionCheck = detectRegression(domainInfo.lastScore, newScore);
 
   return {
@@ -89,57 +86,26 @@ function recordRescan(
 }
 
 /**
- * Re-scan domains on Trigger.dev. All runs are triggered first (the task queue
- * limits how many execute at once), then polled until a shared deadline.
- * Domains whose run has not finished by then are skipped and logged.
- */
-async function rescanFromInfos(infos: DomainForRescan[]): Promise<RescanResult[]> {
-  const started = await Promise.all(
-    infos.map(async (info) => {
-      try {
-        return { info, runId: await triggerScan(info.url) };
-      } catch (err) {
-        console.error("[Rescan Error] Failed to start scan for %s:", info.domain, err);
-        return null;
-      }
-    })
-  );
-
-  const deadline = Date.now() + RESCAN_WAIT_MS;
-  const results: RescanResult[] = [];
-
-  await Promise.all(
-    started.map(async (entry) => {
-      if (!entry) return;
-      try {
-        const run = await waitForScan(entry.runId, {
-          timeoutMs: Math.max(0, deadline - Date.now()),
-        });
-        if (run.state === "ok") {
-          results.push(recordRescan(entry.info, entry.runId, run.result));
-        } else {
-          const statusMessage =
-            run.state === "error"
-              ? `failed: ${run.message}`
-              : run.state === "expired"
-                ? "expired in the queue"
-                : "did not finish in time";
-          console.error("[Rescan Error] Scan for %s %s", entry.info.domain, statusMessage);
-        }
-      } catch (err) {
-        console.error("[Rescan Error] Failed to rescan %s:", entry.info.domain, err);
-      }
-    })
-  );
-
-  return results;
-}
-
-/**
  * Re-scan multiple domains.
  * Domains are selected by oldest scan first.
  */
 export async function rescanDomains(limit: number = 10): Promise<RescanResult[]> {
   initDb();
-  return rescanFromInfos(getDomainsForRescan(limit));
+
+  // Get domains to rescan, ordered by oldest scan first
+  const domains = getDomainsForRescan(limit);
+
+  const results: RescanResult[] = [];
+
+  for (const domainInfo of domains) {
+    try {
+      const result = await rescanDomainFromInfo(domainInfo);
+      results.push(result);
+    } catch (err) {
+      // Log error but continue with other domains
+      console.error("[Rescan Error] Failed to rescan %s:", domainInfo.domain, err);
+    }
+  }
+
+  return results;
 }

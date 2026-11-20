@@ -1,43 +1,162 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { scanUrl } from "@/lib/scan";
+import { scanUrl as triggerScanUrl } from "@/trigger/compliance-scan";
 import {
   ScanRequestSchema,
   validateAndResolveUrl,
   ValidationError,
+  TimeoutError,
   RateLimitError,
 } from "@/lib/validation";
-import { checkClientGate, checkDomainGate } from "@/lib/scanGate";
-import { triggerScan } from "@/lib/scan-runs";
+import {
+  checkRateLimit,
+  checkDomainLimit,
+  getRateLimitHeaders,
+} from "@/lib/rateLimit";
+import { DbInitError, initDb, saveScan } from "@/lib/db";
 
 export const runtime = "nodejs";
 
-/**
- * POST /api/scan: validate, then hand the scan to Trigger.dev and return the
- * run id. No browser runs in this function. Poll GET /api/scan/{runId}.
- */
+// Maximum concurrent scans (simple semaphore)
+let activeScans = 0;
+const MAX_CONCURRENT_SCANS = 3;
+
+function getClientId(req: Request): string {
+  // Try to get real IP from various headers
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) {
+    return realIp;
+  }
+  // Fallback to a hash of user-agent + some request properties
+  return "anonymous";
+}
+
 export async function POST(req: Request) {
-  const gate = checkClientGate(req);
-  if (!gate.ok) return gate.response;
-  const rateLimitHeaders = gate.rateLimitHeaders;
+  const clientId = getClientId(req);
+
+  // Check rate limit
+  const rateLimit = checkRateLimit(clientId);
+  const rateLimitHeaders = getRateLimitHeaders(clientId);
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        status: "error",
+        error:
+          "Rate limit exceeded. Please wait before making another request.",
+        code: "RATE_LIMITED",
+        retryAfter: rateLimit.retryAfter,
+      },
+      {
+        status: 429,
+        headers: {
+          ...rateLimitHeaders,
+          "Retry-After": String(rateLimit.retryAfter),
+        },
+      },
+    );
+  }
+
+  // Check concurrent scan limit
+  if (activeScans >= MAX_CONCURRENT_SCANS) {
+    return NextResponse.json(
+      {
+        status: "error",
+        error: "Server is busy. Please try again in a moment.",
+        code: "SERVER_BUSY",
+        retryAfter: 10,
+      },
+      {
+        status: 503,
+        headers: {
+          ...rateLimitHeaders,
+          "Retry-After": "10",
+        },
+      },
+    );
+  }
 
   try {
+    // Parse and validate request body
     const body = ScanRequestSchema.parse(await req.json());
 
+    // Validate and normalize URL
     const urlResult = await validateAndResolveUrl(body.url);
     if (!urlResult.valid) {
       return NextResponse.json(
-        { status: "error", error: urlResult.error, code: "INVALID_URL" },
+        {
+          status: "error",
+          error: urlResult.error,
+          code: "INVALID_URL",
+        },
         { status: 400, headers: rateLimitHeaders },
       );
     }
 
+    // Check domain-specific rate limit
     const domain = new URL(urlResult.url).hostname;
-    const cooldown = checkDomainGate(domain, rateLimitHeaders);
-    if (cooldown) return cooldown;
+    const domainLimit = checkDomainLimit(domain);
+    if (!domainLimit.allowed) {
+      return NextResponse.json(
+        {
+          status: "error",
+          error: `This domain was recently scanned. Please wait ${domainLimit.retryAfter} seconds.`,
+          code: "DOMAIN_COOLDOWN",
+          retryAfter: domainLimit.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            ...rateLimitHeaders,
+            "Retry-After": String(domainLimit.retryAfter),
+          },
+        },
+      );
+    }
 
-    const runId = await triggerScan(urlResult.url);
-    return NextResponse.json({ runId }, { status: 202, headers: rateLimitHeaders });
+    // Execute scan
+    activeScans++;
+    try {
+      const result = await scanUrl(urlResult.url);
+
+      // Save successful scans to database
+      let scanId: number | undefined;
+      if (result.status === "ok") {
+        try {
+          initDb();
+          scanId = saveScan(result);
+        } catch (dbError) {
+          // Don't fail the request if DB save fails. DbInitError is already
+          // logged once with context by initDb; log anything else here.
+          if (!(dbError instanceof DbInitError)) {
+            console.error("[Scan DB Error]", dbError);
+          }
+        }
+      }
+
+      // Trigger async background job (fire-and-forget)
+      if (result.status === "ok" && scanId !== undefined) {
+        triggerScanUrl
+          .trigger({ url: urlResult.url, reportId: String(scanId) })
+          .catch((err) => {
+            console.error("[Trigger Job Error]", err);
+            // Don't fail the response if trigger fails
+          });
+      }
+
+      // Add scanId to response if available
+      const response = scanId !== undefined ? { ...result, scanId } : result;
+      return NextResponse.json(response, { headers: rateLimitHeaders });
+    } finally {
+      activeScans--;
+    }
   } catch (err) {
+    // Handle specific error types
     if (err instanceof ZodError) {
       return NextResponse.json(
         {
@@ -55,21 +174,81 @@ export async function POST(req: Request) {
 
     if (err instanceof ValidationError) {
       return NextResponse.json(
-        { status: "error", error: err.message, code: "VALIDATION_ERROR" },
+        {
+          status: "error",
+          error: err.message,
+          code: "VALIDATION_ERROR",
+        },
         { status: 400, headers: rateLimitHeaders },
+      );
+    }
+
+    if (err instanceof TimeoutError) {
+      return NextResponse.json(
+        {
+          status: "timeout",
+          error: "Scan timed out. The target site may be slow or unresponsive.",
+          code: "TIMEOUT",
+        },
+        { status: 504, headers: rateLimitHeaders },
       );
     }
 
     if (err instanceof RateLimitError) {
       return NextResponse.json(
-        { status: "error", error: err.message, code: "RATE_LIMITED", retryAfter: err.retryAfter },
+        {
+          status: "error",
+          error: err.message,
+          code: "RATE_LIMITED",
+          retryAfter: err.retryAfter,
+        },
         {
           status: 429,
-          headers: { ...rateLimitHeaders, "Retry-After": String(err.retryAfter) },
+          headers: {
+            ...rateLimitHeaders,
+            "Retry-After": String(err.retryAfter),
+          },
         },
       );
     }
 
+    // Check for Playwright-specific errors
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+
+    if (errorMessage.includes("net::ERR_NAME_NOT_RESOLVED")) {
+      return NextResponse.json(
+        {
+          status: "error",
+          error: "Could not resolve domain. Please check the URL.",
+          code: "DNS_ERROR",
+        },
+        { status: 400, headers: rateLimitHeaders },
+      );
+    }
+
+    if (errorMessage.includes("net::ERR_CONNECTION_REFUSED")) {
+      return NextResponse.json(
+        {
+          status: "error",
+          error: "Connection refused by the target server.",
+          code: "CONNECTION_REFUSED",
+        },
+        { status: 502, headers: rateLimitHeaders },
+      );
+    }
+
+    if (errorMessage.includes("Timeout")) {
+      return NextResponse.json(
+        {
+          status: "timeout",
+          error: "Scan timed out. The target site may be slow or unresponsive.",
+          code: "TIMEOUT",
+        },
+        { status: 504, headers: rateLimitHeaders },
+      );
+    }
+
+    // Generic server error
     console.error("[Scan Error]", err);
     return NextResponse.json(
       {
