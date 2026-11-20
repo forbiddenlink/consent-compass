@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/forbiddenlink/consent-compass/compare/v1.2.0...v1.2.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* include the Playwright runtime in report exports ([#152](https://github.com/forbiddenlink/consent-compass/issues/152)) ([4cc7c32](https://github.com/forbiddenlink/consent-compass/commit/4cc7c322422edf37c815da035ee0dbc0dec0ad41))
+
 ## [1.2.0](https://github.com/forbiddenlink/consent-compass/compare/v1.1.3...v1.2.0) (2026-11-20)
 
 
