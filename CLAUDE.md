@@ -9,8 +9,8 @@ report out: screenshots, detected signals, findings, and a compliance score.
 - Playwright (Chromium) drives `/api/scan`: loads the URL, screenshots it, runs
   heuristics to detect a consent banner and accept/reject actions
 - Trigger.dev for background jobs (`src/trigger/compliance-scan.ts`)
-- Sentry, Axiom, Langfuse for observability; Resend for email; Arcjet for
-  request protection; PostHog for analytics
+- Sentry, Axiom, Langfuse for observability; Resend for email;
+  PostHog for analytics
 - better-sqlite3 for local tracker/category data (`scripts/generate-tracker-db.mjs`)
 - pnpm (`packageManager: pnpm@10.34.7`)
 - Vitest + Testing Library
@@ -49,7 +49,7 @@ Validated in `src/env.ts` (server): `GROQ_API_KEY`, `RESEND_API_KEY`,
 `NEXT_PUBLIC_AXIOM_DATASET` (optional). Set `SKIP_ENV_VALIDATION` to bypass.
 
 Read directly via `process.env` elsewhere (not in the `env.ts` schema):
-`ARCJET_KEY`, `LANGFUSE_HOST`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`,
+`LANGFUSE_HOST`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`,
 `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `RESCAN_API_KEY`, `USE_MEMORY_DB`,
 `CC_PORT`.
 
