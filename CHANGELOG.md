@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/forbiddenlink/consent-compass/compare/v1.2.1...v1.2.2) (2026-11-24)
+
+
+### Bug Fixes
+
+* sample 10 percent of traces and report global-error to Sentry ([#159](https://github.com/forbiddenlink/consent-compass/issues/159)) ([0c40ed1](https://github.com/forbiddenlink/consent-compass/commit/0c40ed1625d43d249437d8c255a56027a720b697))
+
 ## [1.2.1](https://github.com/forbiddenlink/consent-compass/compare/v1.2.0...v1.2.1) (2026-11-23)
 
 
